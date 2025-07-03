@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Employability Game{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h2">
+                    <i class="fas fa-shield-alt text-warning me-3"></i>Admin Dashboard
+                </h1>
+                <a href="{{ url_for('dashboard') }}" class="btn btn-outline-primary">
+                    <i class="fas fa-home me-2"></i>Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <h4 class="mb-0">{{ stats.total_users }}</h4>
+                            <p class="mb-0">Total Users</p>
+                        </div>
+                        <div class="ms-3">
+                            <i class="fas fa-users fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <h4 class="mb-0">{{ stats.total_questions }}</h4>
+                            <p class="mb-0">Total Questions</p>
+                        </div>
+                        <div class="ms-3">
+                            <i class="fas fa-question-circle fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <h4 class="mb-0">{{ stats.total_assessments }}</h4>
+                            <p class="mb-0">Assessments Taken</p>
+                        </div>
+                        <div class="ms-3">
+                            <i class="fas fa-chart-line fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <h4 class="mb-0">Active</h4>
+                            <p class="mb-0">System Status</p>
+                        </div>
+                        <div class="ms-3">
+                            <i class="fas fa-server fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Questions by Type -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-pie me-2"></i>Questions by Type
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Assessment Type</th>
+                                    <th class="text-end">Count</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for type, count in stats.questions_by_type.items() %}
+                                <tr>
+                                    <td>
+                                        <span class="badge bg-secondary me-2">{{ type.title() }}</span>
+                                    </td>
+                                    <td class="text-end">
+                                        <strong>{{ count }}</strong>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-tools me-2"></i>Quick Actions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('admin_questions') }}" class="btn btn-outline-primary">
+                            <i class="fas fa-question-circle me-2"></i>Manage Questions
+                        </a>
+                        <a href="{{ url_for('admin_add_question') }}" class="btn btn-outline-success">
+                            <i class="fas fa-plus me-2"></i>Add New Question
+                        </a>
+                        <a href="{{ url_for('admin_levels') }}" class="btn btn-outline-info">
+                            <i class="fas fa-layer-group me-2"></i>Manage Levels
+                        </a>
+                        <a href="{{ url_for('admin_add_level') }}" class="btn btn-outline-warning">
+                            <i class="fas fa-plus-circle me-2"></i>Add New Level
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Management Sections -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-cogs me-2"></i>System Management
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Question Management</h6>
+                            <p class="text-muted">Add, edit, or remove questions from the assessment database. Control question difficulty levels and categories.</p>
+                            <a href="{{ url_for('admin_questions') }}" class="btn btn-sm btn-primary">Manage Questions</a>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Level Management</h6>
+                            <p class="text-muted">Configure assessment levels, set passing percentages, and manage XP rewards for each level.</p>
+                            <a href="{{ url_for('admin_levels') }}" class="btn btn-sm btn-info">Manage Levels</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.card {
+    border: none;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    transition: all 0.15s ease-in-out;
+}
+
+.card:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.bg-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important; }
+.bg-success { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%) !important; }
+.bg-info { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%) !important; }
+.bg-warning { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%) !important; }
+</style>
+{% endblock %}

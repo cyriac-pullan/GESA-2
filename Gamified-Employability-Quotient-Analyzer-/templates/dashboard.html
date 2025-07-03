@@ -1,0 +1,254 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Employability Game{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Welcome Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="game-card">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h2 class="mb-2">
+                            <i class="fas fa-gamepad me-2"></i>
+                            Welcome back, {{ user.username }}!
+                        </h2>
+                        <p class="text-muted mb-0">Ready to level up your career today?</p>
+                        {% if user.is_admin %}
+                            <div class="mt-2">
+                                <a href="{{ url_for('admin_dashboard') }}" class="btn btn-warning btn-sm">
+                                    <i class="fas fa-shield-alt me-1"></i>Admin Panel
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-4 text-md-end">
+                        <div class="level-badge mb-2">{{ user.level }}</div>
+                        <div class="xp-display">{{ user.total_xp }} XP</div>
+                    </div>
+                </div>
+                
+                <!-- Progress Bar -->
+                <div class="mt-3">
+                    <div class="d-flex justify-content-between mb-1">
+                        <small>Level Progress</small>
+                        <small>{{ user.get_level_progress() }}%</small>
+                    </div>
+                    <div class="progress">
+                        <div class="progress-bar" role="progressbar" style="width: {{ user.get_level_progress() }}%" aria-valuenow="{{ user.get_level_progress() }}" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Stats Overview -->
+    <div class="row g-4 mb-4">
+        <div class="col-lg-3 col-md-6">
+            <div class="game-card text-center">
+                <div class="card-icon" style="color: #6c5ce7;">
+                    <i class="fas fa-bullseye"></i>
+                </div>
+                <div class="score-number">{{ "%.1f"|format(user.employability_score) }}</div>
+                <div class="score-label">Employability Score</div>
+            </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-6">
+            <div class="game-card text-center">
+                <div class="card-icon" style="color: #00b894;">
+                    <i class="fas fa-coins"></i>
+                </div>
+                <div class="score-number">{{ user.total_points }}</div>
+                <div class="score-label">Total Points</div>
+            </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-6">
+            <div class="game-card text-center">
+                <div class="card-icon" style="color: #fd79a8;">
+                    <i class="fas fa-medal"></i>
+                </div>
+                <div class="score-number">{{ badges|length }}</div>
+                <div class="score-label">Badges Earned</div>
+            </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-6">
+            <div class="game-card text-center">
+                <div class="card-icon" style="color: #fdcb6e;">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="score-number">{{ user.level }}</div>
+                <div class="score-label">Current Level</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <!-- Left Column -->
+        <div class="col-lg-8">
+            <!-- Quick Actions -->
+            <div class="game-card mb-4">
+                <h4 class="mb-3">
+                    <i class="fas fa-bolt me-2"></i>Quick Actions
+                </h4>
+                <div class="row g-3">
+                    <!-- Featured: Adaptive Analyzer -->
+                    <div class="col-12 mb-2">
+                        <div class="adaptive-analyzer-highlight">
+                            <div class="row align-items-center">
+                                <div class="col-md-9">
+                                    <h5 class="mb-1">
+                                        <i class="fas fa-magic me-2" style="color: #6c5ce7;"></i>
+                                        Adaptive Employability Score Analyzer
+                                        <span class="badge bg-warning ms-2">NEW</span>
+                                    </h5>
+                                    <p class="mb-0 text-muted">
+                                        Smart assessment that adapts to your skill level • Starts easy, gets harder • Personalized difficulty
+                                    </p>
+                                </div>
+                                <div class="col-md-3 text-md-end">
+                                    <a href="{{ url_for('take_assessment', assessment_type='adaptive') }}" class="btn btn-game-special">
+                                        <i class="fas fa-rocket me-2"></i>Try Now
+                                        <small class="d-block">+50 XP</small>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Regular Assessments -->
+                    <div class="col-md-6">
+                        <a href="{{ url_for('take_assessment', assessment_type='aptitude') }}" class="btn btn-game w-100">
+                            <i class="fas fa-brain me-2"></i>Aptitude Test
+                            <small class="d-block">+30 XP</small>
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <a href="{{ url_for('take_assessment', assessment_type='technical') }}" class="btn btn-game w-100">
+                            <i class="fas fa-code me-2"></i>Technical Test
+                            <small class="d-block">+30 XP</small>
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <a href="{{ url_for('resume') }}" class="btn btn-game-secondary w-100">
+                            <i class="fas fa-file-alt me-2"></i>Upload Resume
+                            <small class="d-block">+25 XP</small>
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <a href="{{ url_for('mock_interview') }}" class="btn btn-game-secondary w-100">
+                            <i class="fas fa-microphone me-2"></i>Mock Interview
+                            <small class="d-block">+20 XP</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recent Activities -->
+            <div class="game-card">
+                <h4 class="mb-3">
+                    <i class="fas fa-history me-2"></i>Recent Activities
+                </h4>
+                {% if activities %}
+                    <div class="activity-timeline">
+                        {% for activity in activities %}
+                            <div class="timeline-item">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <strong>{{ activity.description }}</strong>
+                                        <div class="text-muted small">
+                                            {{ activity.created_at.strftime('%B %d, %Y at %I:%M %p') }}
+                                        </div>
+                                    </div>
+                                    <div class="text-end">
+                                        {% if activity.points_earned > 0 %}
+                                            <span class="badge bg-success">+{{ activity.points_earned }} pts</span>
+                                        {% endif %}
+                                        {% if activity.xp_earned > 0 %}
+                                            <span class="badge bg-primary">+{{ activity.xp_earned }} XP</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-clock"></i>
+                        <h5>No activities yet</h5>
+                        <p>Start taking assessments to see your progress here!</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Right Column -->
+        <div class="col-lg-4">
+            <!-- Badges -->
+            <div class="game-card mb-4">
+                <h4 class="mb-3">
+                    <i class="fas fa-trophy me-2"></i>Your Badges
+                </h4>
+                {% if badges %}
+                    <div class="badge-container">
+                        {% for user_badge in badges %}
+                            <div class="achievement-badge" title="{{ user_badge.badge.description }}">
+                                <div class="badge-icon {{ user_badge.badge.color }}">
+                                    <i class="{{ user_badge.badge.icon }}"></i>
+                                </div>
+                                <div class="small">{{ user_badge.badge.name }}</div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-award"></i>
+                        <h6>No badges yet</h6>
+                        <p>Complete assessments to earn your first badge!</p>
+                    </div>
+                {% endif %}
+            </div>
+            
+            <!-- Active Challenges -->
+            <div class="game-card">
+                <h4 class="mb-3">
+                    <i class="fas fa-tasks me-2"></i>Active Challenges
+                </h4>
+                {% if challenges %}
+                    {% for user_challenge in challenges %}
+                        <div class="challenge-card">
+                            <h6>{{ user_challenge.challenge.title }}</h6>
+                            <p class="small text-muted mb-2">{{ user_challenge.challenge.description }}</p>
+                            <div class="challenge-progress">
+                                <div class="d-flex justify-content-between mb-1">
+                                    <small>Progress</small>
+                                    <small>{{ user_challenge.progress }}/{{ user_challenge.challenge.target_value }}</small>
+                                </div>
+                                <div class="progress">
+                                    <div class="progress-bar" style="width: {{ (user_challenge.progress / user_challenge.challenge.target_value * 100)|round }}%"></div>
+                                </div>
+                            </div>
+                            <div class="mt-2">
+                                <span class="badge bg-warning">+{{ user_challenge.challenge.xp_reward }} XP</span>
+                                <span class="badge bg-info">+{{ user_challenge.challenge.points_reward }} pts</span>
+                            </div>
+                        </div>
+                    {% endfor %}
+                    <div class="text-center mt-3">
+                        <a href="{{ url_for('challenges') }}" class="btn btn-outline-primary btn-sm">View All Challenges</a>
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-clipboard-list"></i>
+                        <h6>No active challenges</h6>
+                        <p>Check back for new challenges!</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

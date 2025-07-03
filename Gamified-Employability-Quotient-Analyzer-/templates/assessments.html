@@ -1,0 +1,243 @@
+{% extends "base.html" %}
+
+{% block title %}Assessments - Employability Game{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="game-card">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h2 class="mb-2">
+                            <i class="fas fa-clipboard-check me-2"></i>
+                            Skill Assessments
+                        </h2>
+                        <p class="text-muted mb-0">Test your skills and earn XP to level up your career!</p>
+                    </div>
+                    <div class="col-md-4 text-md-end">
+                        <div class="level-badge mb-2">{{ user.level }}</div>
+                        <div class="xp-display">{{ user.total_xp }} XP</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Assessment Types -->
+    <div class="row g-4 mb-4">
+        <!-- Aptitude Assessment -->
+        <div class="col-lg-4 col-md-6">
+            <div class="game-card text-center h-100">
+                <div class="card-icon" style="color: #6c5ce7;">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <h4>Aptitude Test</h4>
+                <p class="text-muted">Mathematical reasoning and logical thinking assessment</p>
+                
+                <!-- Level Progress -->
+                {% if user_levels.get('aptitude') %}
+                    {% set user_level = user_levels['aptitude'] %}
+                    <div class="mb-3">
+                        <small class="text-muted">Current Level:</small>
+                        <div class="level-progress">
+                            <span class="badge bg-primary">Level {{ user_level.current_level }}</span>
+                        </div>
+                    </div>
+                {% endif %}
+                
+                <!-- Available Levels -->
+                {% if available_levels.get('aptitude') %}
+                    <div class="mb-3">
+                        {% for level in available_levels['aptitude'] %}
+                            {% set is_unlocked = user_levels['aptitude'].is_level_unlocked(level.level_number) if user_levels.get('aptitude') else (level.level_number == 1) %}
+                            <div class="level-option mb-2">
+                                {% if is_unlocked %}
+                                    <a href="{{ url_for('take_assessment', assessment_type='aptitude', level=level.level_number) }}" 
+                                       class="btn btn-sm btn-outline-primary me-2">
+                                        Level {{ level.level_number }}: {{ level.level_name }}
+                                    </a>
+                                {% else %}
+                                    <button class="btn btn-sm btn-outline-secondary me-2" disabled>
+                                        <i class="fas fa-lock me-1"></i>Level {{ level.level_number }}: {{ level.level_name }}
+                                    </button>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <a href="{{ url_for('take_assessment', assessment_type='aptitude') }}" class="btn btn-game">
+                        <i class="fas fa-play me-2"></i>Start Test
+                </a>
+            </div>
+        </div>
+        
+        <div class="col-lg-4 col-md-6">
+            <div class="game-card text-center h-100">
+                <div class="card-icon" style="color: #00b894;">
+                    <i class="fas fa-code"></i>
+                </div>
+                <h4>Technical Skills</h4>
+                <p class="text-muted">Programming concepts and technical knowledge</p>
+                <div class="mb-3">
+                    <span class="badge bg-primary">5 Questions</span>
+                    <span class="badge bg-success">+30 XP</span>
+                </div>
+                {% if assessment_summary.get('technical') %}
+                    <div class="mb-3">
+                        <small class="text-muted">Best Score:</small>
+                        <div class="score-display small">
+                            {{ "%.1f"|format(assessment_summary['technical'][0].get_percentage()) }}%
+                        </div>
+                    </div>
+                {% endif %}
+                <a href="{{ url_for('take_assessment', assessment_type='technical') }}" class="btn btn-game">
+                    <i class="fas fa-play me-2"></i>Start Test
+                </a>
+            </div>
+        </div>
+        
+        <div class="col-lg-4 col-md-6">
+            <div class="game-card text-center h-100">
+                <div class="card-icon" style="color: #fd79a8;">
+                    <i class="fas fa-handshake"></i>
+                </div>
+                <h4>Soft Skills</h4>
+                <p class="text-muted">Communication and interpersonal skills evaluation</p>
+                <div class="mb-3">
+                    <span class="badge bg-primary">5 Questions</span>
+                    <span class="badge bg-success">+30 XP</span>
+                </div>
+                {% if assessment_summary.get('soft_skills') %}
+                    <div class="mb-3">
+                        <small class="text-muted">Best Score:</small>
+                        <div class="score-display small">
+                            {{ "%.1f"|format(assessment_summary['soft_skills'][0].get_percentage()) }}%
+                        </div>
+                    </div>
+                {% endif %}
+                <a href="{{ url_for('take_assessment', assessment_type='soft_skills') }}" class="btn btn-game">
+                    <i class="fas fa-play me-2"></i>Start Test
+                </a>
+            </div>
+        </div>
+        
+        <!-- Adaptive Assessment -->
+        <div class="col-lg-4 col-md-6">
+            <div class="game-card text-center h-100">
+                <div class="card-icon" style="color: #ff7675;">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <h4>Adaptive Test</h4>
+                <p class="text-muted">AI-powered assessment that adapts to your skill level</p>
+                <div class="mb-3">
+                    <span class="badge bg-warning">Dynamic Questions</span>
+                    <span class="badge bg-danger">+50 XP</span>
+                </div>
+                {% if assessment_summary.get('adaptive') %}
+                    <div class="mb-3">
+                        <small class="text-muted">Best Score:</small>
+                        <div class="score-display small">
+                            {{ "%.1f"|format(assessment_summary['adaptive'][0].get_percentage()) }}%
+                        </div>
+                    </div>
+                {% endif %}
+                <a href="{{ url_for('take_assessment', assessment_type='adaptive') }}" class="btn btn-game">
+                    <i class="fas fa-magic me-2"></i>Start Adaptive Test
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Assessment History -->
+    <div class="row">
+        <div class="col-12">
+            <div class="game-card">
+                <h4 class="mb-3">
+                    <i class="fas fa-history me-2"></i>Assessment History
+                </h4>
+                
+                {% if assessment_summary %}
+                    <div class="row">
+                        {% for assessment_type, assessments in assessment_summary.items() %}
+                            <div class="col-lg-4 mb-4">
+                                <div class="card h-100">
+                                    <div class="card-header">
+                                        <h6 class="mb-0">
+                                            {% if assessment_type == 'aptitude' %}
+                                                <i class="fas fa-brain me-2"></i>Aptitude Tests
+                                            {% elif assessment_type == 'technical' %}
+                                                <i class="fas fa-code me-2"></i>Technical Tests
+                                            {% elif assessment_type == 'soft_skills' %}
+                                                <i class="fas fa-handshake me-2"></i>Soft Skills Tests
+                                            {% endif %}
+                                        </h6>
+                                    </div>
+                                    <div class="card-body">
+                                        {% for assessment in assessments[:3] %}
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <div>
+                                                    <div class="fw-bold">{{ "%.1f"|format(assessment.get_percentage()) }}%</div>
+                                                    <small class="text-muted">{{ assessment.completed_at.strftime('%b %d, %Y') }}</small>
+                                                </div>
+                                                <div>
+                                                    {% if assessment.get_percentage() >= 90 %}
+                                                        <span class="badge bg-success">Excellent</span>
+                                                    {% elif assessment.get_percentage() >= 80 %}
+                                                        <span class="badge bg-info">Good</span>
+                                                    {% elif assessment.get_percentage() >= 70 %}
+                                                        <span class="badge bg-warning">Fair</span>
+                                                    {% else %}
+                                                        <span class="badge bg-secondary">Needs Improvement</span>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                        {% if assessments|length > 3 %}
+                                            <small class="text-muted">+ {{ assessments|length - 3 }} more attempts</small>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-clipboard"></i>
+                        <h5>No assessments taken yet</h5>
+                        <p>Start with an aptitude test to begin your employability journey!</p>
+                        <a href="{{ url_for('take_assessment', assessment_type='aptitude') }}" class="btn btn-game">
+                            <i class="fas fa-play me-2"></i>Take First Assessment
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Tips and Motivation -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="game-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h5 class="mb-2">
+                            <i class="fas fa-lightbulb me-2"></i>Assessment Tips
+                        </h5>
+                        <ul class="mb-0">
+                            <li>Take your time and read each question carefully</li>
+                            <li>You can retake assessments to improve your scores</li>
+                            <li>Higher scores unlock special badges and more XP</li>
+                            <li>Regular practice helps improve your employability score</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <i class="fas fa-trophy" style="font-size: 3rem; opacity: 0.8;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

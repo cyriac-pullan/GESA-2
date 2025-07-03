@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block title %}Adaptive Assessment - Employability Game{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Header -->
+            <div class="adaptive-progress">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h3 class="mb-2">
+                            <i class="fas fa-magic me-2"></i>
+                            Adaptive Employability Analyzer
+                        </h3>
+                        <p class="mb-0">Question {{ question_number|default(1) }} of 10</p>
+                    </div>
+                    <div class="col-md-4 text-md-end">
+                        <div class="difficulty-indicator">
+                            <strong>Difficulty:</strong>
+                            <div class="difficulty-bars">
+                                {% for i in range(1, 6) %}
+                                    <div class="difficulty-bar{% if i <= difficulty %} active{% endif %}"></div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Progress Bar -->
+                <div class="progress mt-3">
+                    <div class="progress-bar" role="progressbar" 
+                         style="width: {{ ((question_number|default(1) - 1) / 10 * 100) }}%">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Feedback for previous answer -->
+            {% if is_correct is defined %}
+                <div class="alert {% if is_correct %}alert-success{% else %}alert-danger{% endif %} mt-3">
+                    <i class="fas {% if is_correct %}fa-check-circle{% else %}fa-times-circle{% endif %} me-2"></i>
+                    {% if is_correct %}
+                        <strong>Correct!</strong> The difficulty is adapting to your skill level.
+                    {% else %}
+                        <strong>Incorrect.</strong> The difficulty is adjusting to help you succeed.
+                    {% endif %}
+                </div>
+            {% endif %}
+            
+            <!-- Question Card -->
+            <div class="game-card mt-4">
+                <div class="skill-level-display">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h6 class="mb-1">Current Assessment Level</h6>
+                            <p class="mb-0">
+                                {% if difficulty == 1 %}Beginner{% endif %}
+                                {% if difficulty == 2 %}Easy{% endif %}
+                                {% if difficulty == 3 %}Medium{% endif %}
+                                {% if difficulty == 4 %}Hard{% endif %}
+                                {% if difficulty == 5 %}Expert{% endif %}
+                            </p>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="confidence-meter">
+                                <div class="confidence-fill" style="width: {{ (difficulty * 20) }}%"></div>
+                            </div>
+                            <small>Confidence Level</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <form method="POST" action="{{ url_for('submit_adaptive_answer') }}">
+                    <div class="question-container mb-4">
+                        <h4 class="question-text">{{ question.question }}</h4>
+                        
+                        <div class="options-container mt-3">
+                            {% for option in question.options %}
+                                <div class="option-wrapper">
+                                    <input type="radio" name="answer" id="option_{{ loop.index }}" 
+                                           value="{{ option }}" required>
+                                    <label for="option_{{ loop.index }}" class="option-label">
+                                        {{ option }}
+                                    </label>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-game-special btn-lg">
+                            <i class="fas fa-arrow-right me-2"></i>
+                            Next Question
+                        </button>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- How It Works -->
+            <div class="game-card mt-4">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-info-circle me-2"></i>How It Works</h6>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check text-success me-2"></i>Starts with easy questions</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Adapts to your answers</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Finds your skill level</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-trophy me-2"></i>Benefits</h6>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-star text-warning me-2"></i>Faster assessment</li>
+                            <li><i class="fas fa-star text-warning me-2"></i>More accurate results</li>
+                            <li><i class="fas fa-star text-warning me-2"></i>Personalized difficulty</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}Register - Employability Game{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+            <div class="game-card">
+                <div class="text-center mb-4">
+                    <div class="card-icon">
+                        <i class="fas fa-user-plus"></i>
+                    </div>
+                    <h2>Join the Game</h2>
+                    <p class="text-muted">Start your employability journey today!</p>
+                </div>
+                
+                <form method="POST">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="username" class="form-label">Username</label>
+                            <input type="text" class="form-control" id="username" name="username" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="full_name" class="form-label">Full Name</label>
+                        <input type="text" class="form-control" id="full_name" name="full_name" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="year_of_study" class="form-label">Year of Study</label>
+                            <select class="form-control" id="year_of_study" name="year_of_study" required>
+                                <option value="">Select Year</option>
+                                <option value="1st Year">1st Year</option>
+                                <option value="2nd Year">2nd Year</option>
+                                <option value="3rd Year">3rd Year</option>
+                                <option value="4th Year">4th Year</option>
+                                <option value="Graduate">Graduate</option>
+                                <option value="Postgraduate">Postgraduate</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="cgpa" class="form-label">CGPA (out of 4.0)</label>
+                            <input type="number" class="form-control" id="cgpa" name="cgpa" step="0.01" min="0" max="4" placeholder="3.5">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="major" class="form-label">Major/Field of Study</label>
+                        <input type="text" class="form-control" id="major" name="major" placeholder="Computer Science" required>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-game">
+                            <i class="fas fa-rocket me-2"></i>Start Gaming
+                        </button>
+                    </div>
+                </form>
+                
+                <div class="text-center mt-3">
+                    <p>Already have an account? <a href="{{ url_for('login') }}" class="text-decoration-none">Login here</a></p>
+                </div>
+                
+                <!-- Gaming Elements -->
+                <div class="text-center mt-4">
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="text-muted">
+                                <i class="fas fa-star" style="color: #fdcb6e;"></i>
+                                <small class="d-block">+50 XP</small>
+                                <small>Welcome Bonus</small>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="text-muted">
+                                <i class="fas fa-trophy" style="color: #6c5ce7;"></i>
+                                <small class="d-block">Badge</small>
+                                <small>New Player</small>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="text-muted">
+                                <i class="fas fa-arrow-up" style="color: #00b894;"></i>
+                                <small class="d-block">Level 1</small>
+                                <small>Beginner</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

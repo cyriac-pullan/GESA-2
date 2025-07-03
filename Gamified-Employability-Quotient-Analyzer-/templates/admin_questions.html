@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+
+{% block title %}Question Management - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h2">
+                    <i class="fas fa-question-circle text-primary me-3"></i>Question Management
+                </h1>
+                <div>
+                    <a href="{{ url_for('admin_add_question') }}" class="btn btn-success me-2">
+                        <i class="fas fa-plus me-2"></i>Add Question
+                    </a>
+                    <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Admin
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">
+                <i class="fas fa-filter me-2"></i>Filters
+            </h5>
+        </div>
+        <div class="card-body">
+            <form method="GET" class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label">Assessment Type</label>
+                    <select name="type" class="form-select">
+                        <option value="all" {{ 'selected' if current_type == 'all' }}>All Types</option>
+                        <option value="aptitude" {{ 'selected' if current_type == 'aptitude' }}>Aptitude</option>
+                        <option value="technical" {{ 'selected' if current_type == 'technical' }}>Technical</option>
+                        <option value="soft_skills" {{ 'selected' if current_type == 'soft_skills' }}>Soft Skills</option>
+                        <option value="adaptive" {{ 'selected' if current_type == 'adaptive' }}>Adaptive</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Difficulty Level</label>
+                    <select name="difficulty" class="form-select">
+                        <option value="all" {{ 'selected' if current_difficulty == 'all' }}>All Levels</option>
+                        <option value="1" {{ 'selected' if current_difficulty == '1' }}>Level 1</option>
+                        <option value="2" {{ 'selected' if current_difficulty == '2' }}>Level 2</option>
+                        <option value="3" {{ 'selected' if current_difficulty == '3' }}>Level 3</option>
+                        <option value="4" {{ 'selected' if current_difficulty == '4' }}>Level 4</option>
+                        <option value="5" {{ 'selected' if current_difficulty == '5' }}>Level 5</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">&nbsp;</label>
+                    <div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-search me-2"></i>Filter
+                        </button>
+                        <a href="{{ url_for('admin_questions') }}" class="btn btn-outline-secondary ms-2">
+                            <i class="fas fa-times me-2"></i>Clear
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Questions Table -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">
+                <i class="fas fa-list me-2"></i>Questions ({{ questions|length }} total)
+            </h5>
+        </div>
+        <div class="card-body">
+            {% if questions %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Question</th>
+                            <th>Type</th>
+                            <th>Level</th>
+                            <th>Category</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for question in questions %}
+                        <tr class="{{ 'table-secondary' if not question.is_active else '' }}">
+                            <td class="fw-bold">#{{ question.id }}</td>
+                            <td>
+                                <div class="question-preview">
+                                    {{ question.question_text[:100] }}{% if question.question_text|length > 100 %}...{% endif %}
+                                </div>
+                                <small class="text-muted">{{ question.get_options_list()|length }} options</small>
+                            </td>
+                            <td>
+                                <span class="badge bg-{{ 'primary' if question.assessment_type == 'aptitude' else 'success' if question.assessment_type == 'technical' else 'info' if question.assessment_type == 'soft_skills' else 'warning' }}">
+                                    {{ question.assessment_type.replace('_', ' ').title() }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge bg-secondary">Level {{ question.difficulty_level }}</span>
+                            </td>
+                            <td>
+                                <small class="text-muted">{{ question.category or 'N/A' }}</small>
+                            </td>
+                            <td>
+                                {% if question.is_active %}
+                                    <span class="badge bg-success">Active</span>
+                                {% else %}
+                                    <span class="badge bg-danger">Inactive</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <a href="{{ url_for('admin_edit_question', question_id=question.id) }}" 
+                                       class="btn btn-outline-primary" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <form method="POST" action="{{ url_for('admin_toggle_question', question_id=question.id) }}" 
+                                          style="display: inline;">
+                                        <button type="submit" class="btn btn-outline-{{ 'warning' if question.is_active else 'success' }}" 
+                                                title="{{ 'Deactivate' if question.is_active else 'Activate' }}">
+                                            <i class="fas fa-{{ 'eye-slash' if question.is_active else 'eye' }}"></i>
+                                        </button>
+                                    </form>
+                                    <form method="POST" action="{{ url_for('admin_delete_question', question_id=question.id) }}" 
+                                          style="display: inline;"
+                                          onsubmit="return confirm('Are you sure you want to delete this question?');">
+                                        <button type="submit" class="btn btn-outline-danger" title="Delete">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-4">
+                <i class="fas fa-question-circle fa-3x text-muted mb-3"></i>
+                <h5>No questions found</h5>
+                <p class="text-muted">No questions match your current filters.</p>
+                <a href="{{ url_for('admin_add_question') }}" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>Add First Question
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+.question-preview {
+    max-width: 300px;
+    word-wrap: break-word;
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(0, 123, 255, 0.1);
+}
+
+.btn-group-sm .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+</style>
+{% endblock %}

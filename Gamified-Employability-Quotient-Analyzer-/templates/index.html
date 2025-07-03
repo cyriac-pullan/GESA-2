@@ -1,0 +1,182 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center">
+                <h1 class="hero-title">
+                    <i class="fas fa-gamepad me-3"></i>
+                    Level Up Your Career
+                </h1>
+                <p class="hero-subtitle">
+                    Transform your employability journey into an engaging game! 
+                    Complete assessments, earn badges, and track your progress towards career success.
+                </p>
+                {% if not session.user_id %}
+                    <div class="mt-4">
+                        <a href="{{ url_for('register') }}" class="btn btn-game btn-lg me-3">
+                            <i class="fas fa-rocket me-2"></i>Start Your Journey
+                        </a>
+                        <a href="{{ url_for('login') }}" class="btn btn-game-secondary btn-lg">
+                            <i class="fas fa-sign-in-alt me-2"></i>Login
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="mt-4">
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-game btn-lg">
+                            <i class="fas fa-tachometer-alt me-2"></i>Go to Dashboard
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container my-5">
+    <!-- Features Section -->
+    <div class="row g-4">
+        <div class="col-lg-4 col-md-6">
+            <div class="game-card text-center">
+                <div class="card-icon">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <h3>Skill Assessments</h3>
+                <p>Test your aptitude, technical skills, and soft skills through engaging quizzes and challenges.</p>
+            </div>
+        </div>
+        
+        <div class="col-lg-4 col-md-6">
+            <div class="game-card text-center">
+                <div class="card-icon">
+                    <i class="fas fa-trophy"></i>
+                </div>
+                <h3>Achievement System</h3>
+                <p>Earn badges, gain XP, and level up as you complete assessments and improve your skills.</p>
+            </div>
+        </div>
+        
+        <div class="col-lg-4 col-md-6">
+            <div class="game-card text-center">
+                <div class="card-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h3>Progress Tracking</h3>
+                <p>Visualize your growth with detailed analytics and personalized recommendations.</p>
+            </div>
+        </div>
+        
+        <div class="col-lg-4 col-md-6">
+            <div class="game-card text-center">
+                <div class="card-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <h3>Leaderboards</h3>
+                <p>Compete with peers and see how you rank among other students on your career journey.</p>
+            </div>
+        </div>
+        
+        <div class="col-lg-4 col-md-6">
+            <div class="game-card text-center">
+                <div class="card-icon">
+                    <i class="fas fa-tasks"></i>
+                </div>
+                <h3>Daily Challenges</h3>
+                <p>Stay motivated with daily and weekly challenges that boost your employability score.</p>
+            </div>
+        </div>
+        
+        <div class="col-lg-4 col-md-6">
+            <div class="game-card text-center">
+                <div class="card-icon">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <h3>Resume Analysis</h3>
+                <p>Upload your resume for intelligent analysis and suggestions to improve your profile.</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Stats Section -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="game-card">
+                <div class="row text-center">
+                    <div class="col-md-3 col-sm-6 mb-3">
+                        <div class="score-display">
+                            <div class="score-number">1000+</div>
+                            <div class="score-label">Students Enrolled</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6 mb-3">
+                        <div class="score-display">
+                            <div class="score-number">50K+</div>
+                            <div class="score-label">Assessments Taken</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6 mb-3">
+                        <div class="score-display">
+                            <div class="score-number">500+</div>
+                            <div class="score-label">Badges Earned</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6 mb-3">
+                        <div class="score-display">
+                            <div class="score-number">95%</div>
+                            <div class="score-label">Student Satisfaction</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- How It Works Section -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <h2 class="text-center mb-5" style="color: white; font-weight: bold;">How It Works</h2>
+        </div>
+        
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="game-card text-center">
+                <div class="card-icon" style="color: #6c5ce7;">
+                    <i class="fas fa-user-plus"></i>
+                </div>
+                <h4>1. Sign Up</h4>
+                <p>Create your account and set up your profile to get started on your career journey.</p>
+            </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="game-card text-center">
+                <div class="card-icon" style="color: #00b894;">
+                    <i class="fas fa-clipboard-check"></i>
+                </div>
+                <h4>2. Take Assessments</h4>
+                <p>Complete various skill assessments to gauge your current employability level.</p>
+            </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="game-card text-center">
+                <div class="card-icon" style="color: #fd79a8;">
+                    <i class="fas fa-arrow-up"></i>
+                </div>
+                <h4>3. Level Up</h4>
+                <p>Earn XP, unlock badges, and level up as you improve your skills and complete challenges.</p>
+            </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="game-card text-center">
+                <div class="card-icon" style="color: #fdcb6e;">
+                    <i class="fas fa-briefcase"></i>
+                </div>
+                <h4>4. Get Job Ready</h4>
+                <p>Track your progress and receive personalized recommendations to become job-ready.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

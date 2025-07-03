@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+
+{% block title %}Add Question - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">
+                        <i class="fas fa-plus-circle text-success me-3"></i>Add New Question
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST" id="questionForm">
+                        <!-- Question Text -->
+                        <div class="mb-3">
+                            <label for="question_text" class="form-label">Question Text *</label>
+                            <textarea name="question_text" id="question_text" class="form-control" 
+                                      rows="3" required placeholder="Enter the question text..."></textarea>
+                        </div>
+
+                        <!-- Assessment Type and Difficulty -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="assessment_type" class="form-label">Assessment Type *</label>
+                                    <select name="assessment_type" id="assessment_type" class="form-select" required>
+                                        <option value="">Select Type</option>
+                                        <option value="aptitude">Aptitude</option>
+                                        <option value="technical">Technical</option>
+                                        <option value="soft_skills">Soft Skills</option>
+                                        <option value="adaptive">Adaptive</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="difficulty_level" class="form-label">Difficulty Level *</label>
+                                    <select name="difficulty_level" id="difficulty_level" class="form-select" required>
+                                        <option value="">Select Level</option>
+                                        <option value="1">Level 1 (Basic)</option>
+                                        <option value="2">Level 2 (Intermediate)</option>
+                                        <option value="3">Level 3 (Advanced)</option>
+                                        <option value="4">Level 4 (Expert)</option>
+                                        <option value="5">Level 5 (Master)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Category -->
+                        <div class="mb-3">
+                            <label for="category" class="form-label">Category</label>
+                            <input type="text" name="category" id="category" class="form-control" 
+                                   placeholder="e.g., Mathematics, Programming, Communication">
+                        </div>
+
+                        <!-- Options -->
+                        <div class="mb-3">
+                            <label class="form-label">Answer Options *</label>
+                            <div id="options-container">
+                                <div class="input-group mb-2">
+                                    <span class="input-group-text">A)</span>
+                                    <input type="text" name="option_1" class="form-control" 
+                                           placeholder="First option" required>
+                                </div>
+                                <div class="input-group mb-2">
+                                    <span class="input-group-text">B)</span>
+                                    <input type="text" name="option_2" class="form-control" 
+                                           placeholder="Second option" required>
+                                </div>
+                                <div class="input-group mb-2">
+                                    <span class="input-group-text">C)</span>
+                                    <input type="text" name="option_3" class="form-control" 
+                                           placeholder="Third option">
+                                </div>
+                                <div class="input-group mb-2">
+                                    <span class="input-group-text">D)</span>
+                                    <input type="text" name="option_4" class="form-control" 
+                                           placeholder="Fourth option">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Correct Answer -->
+                        <div class="mb-3">
+                            <label for="correct_answer" class="form-label">Correct Answer *</label>
+                            <input type="text" name="correct_answer" id="correct_answer" class="form-control" 
+                                   required placeholder="Enter the exact text of the correct answer">
+                            <div class="form-text">Enter the exact text that matches one of the options above.</div>
+                        </div>
+
+                        <!-- Explanation -->
+                        <div class="mb-3">
+                            <label for="explanation" class="form-label">Explanation (Optional)</label>
+                            <textarea name="explanation" id="explanation" class="form-control" 
+                                      rows="2" placeholder="Provide an explanation for the correct answer..."></textarea>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('admin_questions') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save me-2"></i>Add Question
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('questionForm').addEventListener('submit', function(e) {
+    // Basic validation
+    const options = document.querySelectorAll('input[name^="option_"]');
+    const correctAnswer = document.getElementById('correct_answer').value.trim();
+    
+    let hasOptions = false;
+    let optionTexts = [];
+    
+    options.forEach(option => {
+        if (option.value.trim()) {
+            hasOptions = true;
+            optionTexts.push(option.value.trim());
+        }
+    });
+    
+    if (!hasOptions) {
+        e.preventDefault();
+        alert('Please provide at least two answer options.');
+        return;
+    }
+    
+    if (optionTexts.length < 2) {
+        e.preventDefault();
+        alert('Please provide at least two answer options.');
+        return;
+    }
+    
+    // Check if correct answer matches one of the options
+    if (!optionTexts.includes(correctAnswer)) {
+        e.preventDefault();
+        alert('The correct answer must exactly match one of the provided options.');
+        return;
+    }
+});
+
+// Auto-fill category based on assessment type
+document.getElementById('assessment_type').addEventListener('change', function() {
+    const categoryField = document.getElementById('category');
+    const type = this.value;
+    
+    const suggestions = {
+        'aptitude': 'Logical Reasoning',
+        'technical': 'Programming',
+        'soft_skills': 'Communication',
+        'adaptive': 'General Knowledge'
+    };
+    
+    if (suggestions[type] && !categoryField.value) {
+        categoryField.value = suggestions[type];
+    }
+});
+</script>
+
+<style>
+.input-group-text {
+    min-width: 50px;
+    justify-content: center;
+    font-weight: bold;
+}
+
+.form-text {
+    font-size: 0.875em;
+}
+
+.card {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+</style>
+{% endblock %}

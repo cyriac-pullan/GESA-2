@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Question - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">
+                        <i class="fas fa-edit text-primary me-3"></i>Edit Question #{{ question.id }}
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST" id="questionForm">
+                        <!-- Question Text -->
+                        <div class="mb-3">
+                            <label for="question_text" class="form-label">Question Text *</label>
+                            <textarea name="question_text" id="question_text" class="form-control" 
+                                      rows="3" required>{{ question.question_text }}</textarea>
+                        </div>
+
+                        <!-- Assessment Type and Difficulty -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="assessment_type" class="form-label">Assessment Type *</label>
+                                    <select name="assessment_type" id="assessment_type" class="form-select" required>
+                                        <option value="aptitude" {{ 'selected' if question.assessment_type == 'aptitude' }}>Aptitude</option>
+                                        <option value="technical" {{ 'selected' if question.assessment_type == 'technical' }}>Technical</option>
+                                        <option value="soft_skills" {{ 'selected' if question.assessment_type == 'soft_skills' }}>Soft Skills</option>
+                                        <option value="adaptive" {{ 'selected' if question.assessment_type == 'adaptive' }}>Adaptive</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="difficulty_level" class="form-label">Difficulty Level *</label>
+                                    <select name="difficulty_level" id="difficulty_level" class="form-select" required>
+                                        <option value="1" {{ 'selected' if question.difficulty_level == 1 }}>Level 1 (Basic)</option>
+                                        <option value="2" {{ 'selected' if question.difficulty_level == 2 }}>Level 2 (Intermediate)</option>
+                                        <option value="3" {{ 'selected' if question.difficulty_level == 3 }}>Level 3 (Advanced)</option>
+                                        <option value="4" {{ 'selected' if question.difficulty_level == 4 }}>Level 4 (Expert)</option>
+                                        <option value="5" {{ 'selected' if question.difficulty_level == 5 }}>Level 5 (Master)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Category -->
+                        <div class="mb-3">
+                            <label for="category" class="form-label">Category</label>
+                            <input type="text" name="category" id="category" class="form-control" 
+                                   value="{{ question.category or '' }}">
+                        </div>
+
+                        <!-- Options -->
+                        <div class="mb-3">
+                            <label class="form-label">Answer Options *</label>
+                            <div id="options-container">
+                                {% set options = question.get_options_list() %}
+                                <div class="input-group mb-2">
+                                    <span class="input-group-text">A)</span>
+                                    <input type="text" name="option_1" class="form-control" 
+                                           value="{{ options[0] if options|length > 0 else '' }}" required>
+                                </div>
+                                <div class="input-group mb-2">
+                                    <span class="input-group-text">B)</span>
+                                    <input type="text" name="option_2" class="form-control" 
+                                           value="{{ options[1] if options|length > 1 else '' }}" required>
+                                </div>
+                                <div class="input-group mb-2">
+                                    <span class="input-group-text">C)</span>
+                                    <input type="text" name="option_3" class="form-control" 
+                                           value="{{ options[2] if options|length > 2 else '' }}">
+                                </div>
+                                <div class="input-group mb-2">
+                                    <span class="input-group-text">D)</span>
+                                    <input type="text" name="option_4" class="form-control" 
+                                           value="{{ options[3] if options|length > 3 else '' }}">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Correct Answer -->
+                        <div class="mb-3">
+                            <label for="correct_answer" class="form-label">Correct Answer *</label>
+                            <input type="text" name="correct_answer" id="correct_answer" class="form-control" 
+                                   value="{{ question.correct_answer }}" required>
+                            <div class="form-text">Enter the exact text that matches one of the options above.</div>
+                        </div>
+
+                        <!-- Explanation -->
+                        <div class="mb-3">
+                            <label for="explanation" class="form-label">Explanation (Optional)</label>
+                            <textarea name="explanation" id="explanation" class="form-control" 
+                                      rows="2">{{ question.explanation or '' }}</textarea>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('admin_questions') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Update Question
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Question Info -->
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h6 class="mb-0">Question Information</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row text-sm">
+                        <div class="col-md-6">
+                            <strong>Created:</strong> {{ question.created_at.strftime('%Y-%m-%d %H:%M') if question.created_at else 'N/A' }}
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Last Updated:</strong> {{ question.updated_at.strftime('%Y-%m-%d %H:%M') if question.updated_at else 'N/A' }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('questionForm').addEventListener('submit', function(e) {
+    // Basic validation
+    const options = document.querySelectorAll('input[name^="option_"]');
+    const correctAnswer = document.getElementById('correct_answer').value.trim();
+    
+    let hasOptions = false;
+    let optionTexts = [];
+    
+    options.forEach(option => {
+        if (option.value.trim()) {
+            hasOptions = true;
+            optionTexts.push(option.value.trim());
+        }
+    });
+    
+    if (!hasOptions) {
+        e.preventDefault();
+        alert('Please provide at least two answer options.');
+        return;
+    }
+    
+    if (optionTexts.length < 2) {
+        e.preventDefault();
+        alert('Please provide at least two answer options.');
+        return;
+    }
+    
+    // Check if correct answer matches one of the options
+    if (!optionTexts.includes(correctAnswer)) {
+        e.preventDefault();
+        alert('The correct answer must exactly match one of the provided options.');
+        return;
+    }
+});
+</script>
+
+<style>
+.input-group-text {
+    min-width: 50px;
+    justify-content: center;
+    font-weight: bold;
+}
+
+.text-sm {
+    font-size: 0.875rem;
+}
+
+.card {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+</style>
+{% endblock %}

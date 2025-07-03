@@ -1,0 +1,243 @@
+{% extends "base.html" %}
+
+{% block title %}Adaptive Assessment Results - Employability Game{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Success Header -->
+            <div class="game-card text-center mb-4">
+                <div class="card-icon" style="color: #6c5ce7; font-size: 3rem;">
+                    <i class="fas fa-trophy"></i>
+                </div>
+                <h2 class="mb-3">Assessment Complete!</h2>
+                <p class="lead text-muted">Your adaptive employability assessment has been analyzed</p>
+            </div>
+            
+            <!-- Main Results -->
+            <div class="adaptive-progress mb-4">
+                <div class="row text-center">
+                    <div class="col-md-4">
+                        <div class="score-display">
+                            <div class="score-number" style="color: white;">{{ "%.1f"|format(results.percentage) }}%</div>
+                            <div class="score-label">Overall Score</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="score-display">
+                            <div class="score-number" style="color: white;">{{ results.skill_level }}</div>
+                            <div class="score-label">Skill Level</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="score-display">
+                            <div class="score-number" style="color: white;">{{ "%.0f"|format(results.confidence) }}%</div>
+                            <div class="score-label">Confidence</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Detailed Analysis -->
+            <div class="row g-4 mb-4">
+                <!-- Skill Level Breakdown -->
+                <div class="col-md-6">
+                    <div class="game-card">
+                        <h5 class="mb-3">
+                            <i class="fas fa-chart-bar me-2"></i>Performance Analysis
+                        </h5>
+                        
+                        <div class="skill-breakdown">
+                            {% set skill_descriptions = {
+                                'Expert': 'Outstanding performance across all difficulty levels',
+                                'Advanced': 'Strong skills with room for minor improvements',
+                                'Intermediate': 'Good foundation with areas for development',
+                                'Beginner': 'Basic understanding with significant growth potential',
+                                'Novice': 'Starting level - focus on fundamental skills'
+                            } %}
+                            
+                            <div class="skill-level-card">
+                                <h6>{{ results.skill_level }} Level</h6>
+                                <p>{{ skill_descriptions[results.skill_level] }}</p>
+                                
+                                <div class="progress">
+                                    <div class="progress-bar" role="progressbar" 
+                                         style="width: {{ results.percentage }}%">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Rewards -->
+                <div class="col-md-6">
+                    <div class="game-card">
+                        <h5 class="mb-3">
+                            <i class="fas fa-gift me-2"></i>Rewards Earned
+                        </h5>
+                        
+                        <div class="rewards-display">
+                            <div class="reward-item">
+                                <i class="fas fa-coins text-warning"></i>
+                                <strong>+{{ points }} Points</strong>
+                            </div>
+                            <div class="reward-item">
+                                <i class="fas fa-star text-primary"></i>
+                                <strong>+{{ xp }} XP</strong>
+                            </div>
+                            <div class="reward-item">
+                                <i class="fas fa-chart-line text-success"></i>
+                                <strong>Employability Score Updated</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Difficulty Breakdown -->
+            <div class="game-card mb-4">
+                <h5 class="mb-3">
+                    <i class="fas fa-layers me-2"></i>Difficulty Performance
+                </h5>
+                
+                <div class="row">
+                    {% set difficulty_names = {1: 'Beginner', 2: 'Easy', 3: 'Medium', 4: 'Hard', 5: 'Expert'} %}
+                    {% for difficulty, score in results.difficulty_breakdown.items() %}
+                        {% if score > 0 %}
+                            <div class="col-md-2">
+                                <div class="difficulty-performance">
+                                    <div class="difficulty-level">{{ difficulty_names[difficulty] }}</div>
+                                    <div class="difficulty-score">{{ score }}</div>
+                                    <small>correct</small>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <!-- Recommendations -->
+            <div class="game-card mb-4">
+                <h5 class="mb-3">
+                    <i class="fas fa-lightbulb me-2"></i>Recommendations
+                </h5>
+                
+                <div class="recommendations">
+                    {% if results.skill_level == 'Expert' %}
+                        <div class="recommendation-item">
+                            <i class="fas fa-star text-warning"></i>
+                            <strong>Excellent work!</strong> Consider mentoring others or taking on leadership roles.
+                        </div>
+                        <div class="recommendation-item">
+                            <i class="fas fa-rocket text-primary"></i>
+                            <strong>Next steps:</strong> Focus on specialized advanced topics and industry trends.
+                        </div>
+                    {% elif results.skill_level == 'Advanced' %}
+                        <div class="recommendation-item">
+                            <i class="fas fa-check text-success"></i>
+                            <strong>Great progress!</strong> You're ready for most professional challenges.
+                        </div>
+                        <div class="recommendation-item">
+                            <i class="fas fa-arrow-up text-info"></i>
+                            <strong>Improvement:</strong> Focus on expert-level problem solving and leadership skills.
+                        </div>
+                    {% elif results.skill_level == 'Intermediate' %}
+                        <div class="recommendation-item">
+                            <i class="fas fa-thumbs-up text-success"></i>
+                            <strong>Good foundation!</strong> Continue building on your existing skills.
+                        </div>
+                        <div class="recommendation-item">
+                            <i class="fas fa-book text-info"></i>
+                            <strong>Study focus:</strong> Advanced technical concepts and soft skills development.
+                        </div>
+                    {% else %}
+                        <div class="recommendation-item">
+                            <i class="fas fa-seedling text-success"></i>
+                            <strong>Keep learning!</strong> Focus on building fundamental skills.
+                        </div>
+                        <div class="recommendation-item">
+                            <i class="fas fa-graduation-cap text-info"></i>
+                            <strong>Study plan:</strong> Start with basic concepts and practice regularly.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="text-center mb-4">
+                <a href="{{ url_for('dashboard') }}" class="btn btn-game me-3">
+                    <i class="fas fa-home me-2"></i>Back to Dashboard
+                </a>
+                <a href="{{ url_for('take_assessment', assessment_type='adaptive') }}" class="btn btn-game-secondary">
+                    <i class="fas fa-redo me-2"></i>Take Again
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.score-display {
+    margin-bottom: 20px;
+}
+
+.skill-level-card {
+    background: rgba(108, 92, 231, 0.1);
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+
+.rewards-display {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.reward-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.difficulty-performance {
+    text-align: center;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+.difficulty-level {
+    font-weight: bold;
+    color: #6c5ce7;
+}
+
+.difficulty-score {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #2d3436;
+}
+
+.recommendations {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.recommendation-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 10px;
+    border-left: 4px solid #6c5ce7;
+}
+</style>
+{% endblock %}

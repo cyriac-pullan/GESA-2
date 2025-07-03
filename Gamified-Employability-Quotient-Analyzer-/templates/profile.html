@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+
+{% block title %}Profile - Employability Game{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="game-card">
+                <div class="text-center mb-4">
+                    <div class="card-icon">
+                        <i class="fas fa-user-edit"></i>
+                    </div>
+                    <h2>Player Profile</h2>
+                    <p class="text-muted">Customize your gaming experience</p>
+                </div>
+                
+                <form method="POST">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="full_name" class="form-label">Full Name</label>
+                            <input type="text" class="form-control" id="full_name" name="full_name" value="{{ user.full_name or '' }}" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="cgpa" class="form-label">CGPA (out of 4.0)</label>
+                            <input type="number" class="form-control" id="cgpa" name="cgpa" step="0.01" min="0" max="4" value="{{ user.cgpa or '' }}">
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="year_of_study" class="form-label">Year of Study</label>
+                            <select class="form-control" id="year_of_study" name="year_of_study" required>
+                                <option value="">Select Year</option>
+                                <option value="1st Year" {{ 'selected' if user.year_of_study == '1st Year' }}>1st Year</option>
+                                <option value="2nd Year" {{ 'selected' if user.year_of_study == '2nd Year' }}>2nd Year</option>
+                                <option value="3rd Year" {{ 'selected' if user.year_of_study == '3rd Year' }}>3rd Year</option>
+                                <option value="4th Year" {{ 'selected' if user.year_of_study == '4th Year' }}>4th Year</option>
+                                <option value="Graduate" {{ 'selected' if user.year_of_study == 'Graduate' }}>Graduate</option>
+                                <option value="Postgraduate" {{ 'selected' if user.year_of_study == 'Postgraduate' }}>Postgraduate</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="major" class="form-label">Major/Field of Study</label>
+                            <input type="text" class="form-control" id="major" name="major" value="{{ user.major or '' }}" required>
+                        </div>
+                    </div>
+                    
+                    <!-- Gaming Preferences -->
+                    <div class="mb-4">
+                        <h5><i class="fas fa-cogs me-2"></i>Gaming Preferences</h5>
+                        <hr>
+                        
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="show_on_leaderboard" name="show_on_leaderboard" {{ 'checked' if user.show_on_leaderboard }}>
+                            <label class="form-check-label" for="show_on_leaderboard">
+                                <i class="fas fa-trophy me-1"></i>Show on Leaderboard
+                                <small class="text-muted d-block">Allow others to see your rank and compete with you</small>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-game">
+                            <i class="fas fa-save me-2"></i>Update Profile (+10 XP)
+                        </button>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Player Stats -->
+            <div class="game-card mt-4">
+                <h4 class="mb-3">
+                    <i class="fas fa-chart-bar me-2"></i>Player Statistics
+                </h4>
+                
+                <div class="row text-center">
+                    <div class="col-md-3 col-sm-6 mb-3">
+                        <div class="score-display">
+                            <div class="score-number">{{ user.total_xp }}</div>
+                            <div class="score-label">Total XP</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6 mb-3">
+                        <div class="score-display">
+                            <div class="score-number">{{ user.total_points }}</div>
+                            <div class="score-label">Total Points</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6 mb-3">
+                        <div class="score-display">
+                            <div class="score-number">{{ user.badges|length }}</div>
+                            <div class="score-label">Badges Earned</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6 mb-3">
+                        <div class="score-display">
+                            <div class="score-number">{{ "%.1f"|format(user.employability_score) }}</div>
+                            <div class="score-label">Employability Score</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Level Progress -->
+                <div class="mt-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="mb-0">Current Level: {{ user.level }}</h5>
+                        <div class="level-badge">{{ user.get_level_progress() }}% Complete</div>
+                    </div>
+                    <div class="progress" style="height: 20px;">
+                        <div class="progress-bar" style="width: {{ user.get_level_progress() }}%"></div>
+                    </div>
+                    <div class="text-center mt-2">
+                        <small class="text-muted">
+                            {% if user.level == 'Beginner' %}
+                                {{ 100 - user.total_xp }} XP needed to reach Learning level
+                            {% elif user.level == 'Learning' %}
+                                {{ 500 - user.total_xp }} XP needed to reach Almost Ready level
+                            {% elif user.level == 'Almost Ready' %}
+                                {{ 1000 - user.total_xp }} XP needed to reach Job-Ready level
+                            {% else %}
+                                You've reached the maximum level! Congratulations!
+                            {% endif %}
+                        </small>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Account Info -->
+            <div class="game-card mt-4">
+                <h4 class="mb-3">
+                    <i class="fas fa-info-circle me-2"></i>Account Information
+                </h4>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Username:</strong> {{ user.username }}</p>
+                        <p><strong>Email:</strong> {{ user.email }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Member Since:</strong> {{ user.created_at.strftime('%B %d, %Y') }}</p>
+                        <p><strong>Last Updated:</strong> {{ moment().format('MMMM DD, YYYY') if moment else 'Recently' }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

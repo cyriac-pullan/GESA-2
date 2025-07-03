@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}Create Admin User - Employability Game{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-warning text-dark">
+                    <h4 class="mb-0 text-center">
+                        <i class="fas fa-shield-alt me-2"></i>Create Admin User
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Important:</strong> This will create the first admin user for the system. 
+                        This page will not be accessible once an admin user exists.
+                    </div>
+
+                    <form method="POST" id="adminForm">
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Username *</label>
+                            <input type="text" name="username" id="username" class="form-control" 
+                                   required minlength="3" placeholder="Enter admin username">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email *</label>
+                            <input type="email" name="email" id="email" class="form-control" 
+                                   required placeholder="admin@example.com">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password *</label>
+                            <input type="password" name="password" id="password" class="form-control" 
+                                   required minlength="6" placeholder="Enter secure password">
+                            <div class="form-text">Password must be at least 6 characters long.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="confirm_password" class="form-label">Confirm Password *</label>
+                            <input type="password" id="confirm_password" class="form-control" 
+                                   required placeholder="Confirm password">
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-warning btn-lg">
+                                <i class="fas fa-user-shield me-2"></i>Create Admin User
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="text-center mt-3">
+                        <a href="{{ url_for('index') }}" class="text-muted">
+                            <i class="fas fa-arrow-left me-1"></i>Back to Home
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('adminForm').addEventListener('submit', function(e) {
+    const password = document.getElementById('password').value;
+    const confirmPassword = document.getElementById('confirm_password').value;
+    
+    if (password !== confirmPassword) {
+        e.preventDefault();
+        alert('Passwords do not match!');
+        return;
+    }
+    
+    if (password.length < 6) {
+        e.preventDefault();
+        alert('Password must be at least 6 characters long!');
+        return;
+    }
+    
+    if (!confirm('Are you sure you want to create this admin user?')) {
+        e.preventDefault();
+        return;
+    }
+});
+</script>
+
+<style>
+.card {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    border: none;
+}
+
+.bg-warning {
+    background: linear-gradient(135deg, #ffc107 0%, #ff8c00 100%) !important;
+}
+
+.alert-info {
+    border-color: #bee5eb;
+    background-color: #d1ecf1;
+    color: #0c5460;
+}
+
+.form-text {
+    font-size: 0.875em;
+}
+</style>
+{% endblock %}

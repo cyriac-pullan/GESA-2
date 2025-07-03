@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+
+{% block title %}{{ assessment_type.replace('_', ' ').title() }} Assessment - Employability Game{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="game-card">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h2 class="mb-2">
+                            {% if assessment_type == 'aptitude' %}
+                                <i class="fas fa-brain me-2"></i>Aptitude Assessment
+                            {% elif assessment_type == 'technical' %}
+                                <i class="fas fa-code me-2"></i>Technical Assessment
+                            {% elif assessment_type == 'soft_skills' %}
+                                <i class="fas fa-handshake me-2"></i>Soft Skills Assessment
+                            {% endif %}
+                        </h2>
+                        <p class="text-muted mb-0">Answer all questions to the best of your ability</p>
+                    </div>
+                    <div class="col-md-4 text-md-end">
+                        <div id="assessmentTimer" class="xp-display">Time: 00:00</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Quiz Form -->
+    <form method="POST" action="{{ url_for('submit_assessment') }}" class="assessment-form">
+        <input type="hidden" name="assessment_type" value="{{ assessment_type }}">
+        
+        {% for question in questions %}
+            <div class="question-card fade-in-up">
+                <div class="question-number">{{ loop.index }}</div>
+                <h5 class="mb-3">{{ question.question }}</h5>
+                
+                <div class="options">
+                    {% for option in question.options %}
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="question_{{ question.id }}" 
+                                   id="q{{ question.id }}_{{ loop.index }}" value="{{ option }}" required>
+                            <label class="form-check-label option-label" for="q{{ question.id }}_{{ loop.index }}">
+                                {{ option }}
+                            </label>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endfor %}
+        
+        <!-- Submit Section -->
+        <div class="game-card mt-4">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h5 class="mb-2">Ready to Submit?</h5>
+                    <p class="text-muted mb-0">Make sure you've answered all questions before submitting.</p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <button type="submit" class="btn btn-game btn-lg">
+                        <i class="fas fa-check me-2"></i>Submit Assessment
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+    
+    <!-- Progress Indicator -->
+    <div class="fixed-bottom p-3">
+        <div class="container">
+            <div class="game-card">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <small class="text-muted">Questions Answered:</small>
+                        <span id="progressText">0/{{ questions|length }}</span>
+                    </div>
+                    <div class="flex-grow-1 mx-3">
+                        <div class="progress">
+                            <div id="progressBar" class="progress-bar" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <small class="text-muted">Potential Reward:</small>
+                        <span class="badge bg-success">+30 XP</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.question-card {
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    margin-bottom: 30px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+    border: 2px solid #f8f9fa;
+    position: relative;
+}
+
+.question-number {
+    position: absolute;
+    top: -15px;
+    left: 30px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.options .form-check {
+    margin-bottom: 12px;
+}
+
+.option-label {
+    cursor: pointer;
+    padding: 15px 20px;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    display: block;
+    background: #f8f9fa;
+    border: 2px solid transparent;
+    width: 100%;
+}
+
+.option-label:hover {
+    background: #6c5ce7;
+    color: white;
+    transform: translateX(5px);
+}
+
+.form-check-input:checked + .option-label {
+    background: #00b894;
+    color: white;
+    border-color: #00b894;
+}
+
+.fixed-bottom .game-card {
+    margin-bottom: 0;
+    border-radius: 15px 15px 0 0;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('.assessment-form');
+    const progressBar = document.getElementById('progressBar');
+    const progressText = document.getElementById('progressText');
+    const totalQuestions = {{ questions|length }};
+    
+    function updateProgress() {
+        const answeredQuestions = form.querySelectorAll('input[type="radio"]:checked').length;
+        const percentage = (answeredQuestions / totalQuestions) * 100;
+        
+        progressBar.style.width = percentage + '%';
+        progressBar.setAttribute('aria-valuenow', percentage);
+        progressText.textContent = answeredQuestions + '/' + totalQuestions;
+        
+        // Change color based on progress
+        if (percentage === 100) {
+            progressBar.className = 'progress-bar bg-success';
+        } else if (percentage >= 50) {
+            progressBar.className = 'progress-bar bg-info';
+        } else {
+            progressBar.className = 'progress-bar bg-warning';
+        }
+    }
+    
+    // Listen for radio button changes
+    form.addEventListener('change', updateProgress);
+    
+    // Initial progress update
+    updateProgress();
+    
+    // Prevent accidental form submission
+    form.addEventListener('submit', function(e) {
+        const answeredQuestions = form.querySelectorAll('input[type="radio"]:checked').length;
+        if (answeredQuestions < totalQuestions) {
+            if (!confirm('You have not answered all questions. Are you sure you want to submit?')) {
+                e.preventDefault();
+            }
+        }
+    });
+});
+</script>
+{% endblock %}
