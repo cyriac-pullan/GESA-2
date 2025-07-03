@@ -660,6 +660,11 @@ def initialize_default_data():
         # Create default challenges if they don't exist
         if Challenge.query.count() == 0:
             create_default_challenges()
+        
+        # Create default questions if they don't exist
+        if Question.query.count() == 0:
+            from utils import create_default_questions
+            create_default_questions()
 
 # Call initialization function
 initialize_default_data()

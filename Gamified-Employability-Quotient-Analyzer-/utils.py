@@ -11,24 +11,24 @@ def calculate_employability_score(user):
     """Calculate overall employability score based on various factors"""
     score = 0
     total_weight = 0
-    
+
     # CGPA component (20% weight)
     if user.cgpa > 0:
         cgpa_score = min(user.cgpa / 4.0 * 100, 100)  # Assuming 4.0 scale
         score += cgpa_score * 0.2
         total_weight += 0.2
-    
+
     # Assessment scores (40% weight)
     assessments = Assessment.query.filter_by(user_id=user.id).all()
     if assessments:
         assessment_scores = []
         for assessment in assessments:
             assessment_scores.append(assessment.get_percentage())
-        
+
         avg_assessment_score = sum(assessment_scores) / len(assessment_scores)
         score += avg_assessment_score * 0.4
         total_weight += 0.4
-    
+
     # Resume quality (20% weight)
     if hasattr(user, 'resumes') and user.resumes:
         latest_resume = user.resumes[-1]
@@ -37,19 +37,19 @@ def calculate_employability_score(user):
             resume_score = analysis.get('overall_score', 50)
             score += resume_score * 0.2
             total_weight += 0.2
-    
+
     # Experience/Activities (20% weight)
     activity_count = len(user.activities)
     activity_score = min(activity_count * 5, 100)  # 5 points per activity, max 100
     score += activity_score * 0.2
     total_weight += 0.2
-    
+
     # Normalize the score
     if total_weight > 0:
         final_score = score / total_weight
     else:
         final_score = 0
-    
+
     return round(final_score, 1)
 
 def analyze_resume(file_path):
@@ -62,7 +62,7 @@ def analyze_resume(file_path):
         'overall_score': 0,
         'suggestions': []
     }
-    
+
     try:
         # Extract text from PDF
         text = ""
@@ -74,35 +74,35 @@ def analyze_resume(file_path):
         else:
             # For DOC/DOCX files, we'll just return basic analysis
             text = "Sample resume text for analysis"
-        
+
         # Basic analysis
         analysis['word_count'] = len(text.split())
-        
+
         # Check for common resume sections
         sections = ['experience', 'education', 'skills', 'projects', 'certifications']
         for section in sections:
             if section.lower() in text.lower():
                 analysis['sections_found'].append(section.title())
-        
+
         # Look for technical skills
         skills = ['python', 'java', 'javascript', 'sql', 'html', 'css', 'react', 'angular', 'node.js']
         for skill in skills:
             if skill.lower() in text.lower():
                 analysis['skills_mentioned'].append(skill)
-        
+
         # Calculate overall score
         score = 50  # Base score
-        
+
         if analysis['word_count'] >= 200:
             score += 10
         if analysis['word_count'] >= 400:
             score += 10
-        
+
         score += len(analysis['sections_found']) * 5
         score += len(analysis['skills_mentioned']) * 3
-        
+
         analysis['overall_score'] = min(score, 100)
-        
+
         # Generate suggestions
         if analysis['word_count'] < 200:
             analysis['suggestions'].append("Consider adding more details to reach 200+ words")
@@ -110,18 +110,18 @@ def analyze_resume(file_path):
             analysis['suggestions'].append("Add an Experience or Work History section")
         if len(analysis['skills_mentioned']) < 3:
             analysis['suggestions'].append("Include more technical skills relevant to your field")
-        
+
     except Exception as e:
         print(f"Error analyzing resume: {e}")
         analysis['suggestions'].append("Unable to fully analyze resume file")
-    
+
     return analysis
 
 def get_assessment_questions(assessment_type):
     """Return questions for different assessment types from database"""
     # Ensure questions are populated in database
     populate_questions_database()
-    
+
     # Get questions from database
     db_questions = Question.get_questions_by_type(assessment_type)
     return [q.to_dict() for q in db_questions]
@@ -226,7 +226,7 @@ def get_assessment_questions_legacy(assessment_type):
             }
         ]
     }
-    
+
     return questions.get(assessment_type, [])
 
 def grade_assessment(assessment_type, answers):
@@ -235,7 +235,7 @@ def grade_assessment(assessment_type, answers):
     correct_answers = 0
     total_questions = len(questions)
     feedback = []
-    
+
     for question in questions:
         question_id = str(question['id'])
         if question_id in answers:
@@ -243,7 +243,7 @@ def grade_assessment(assessment_type, answers):
                 correct_answers += 1
             else:
                 feedback.append(f"Question {question_id}: Correct answer is {question['correct']}")
-    
+
     return correct_answers, total_questions, feedback
 
 def get_adaptive_questions():
@@ -385,7 +385,7 @@ def get_next_adaptive_question(current_difficulty, correct_streak, total_answere
     """Get the next question based on adaptive algorithm from database"""
     # Ensure questions are populated
     populate_questions_database()
-    
+
     # Adaptive logic
     if total_answered == 0:
         # Start with easy questions
@@ -396,17 +396,17 @@ def get_next_adaptive_question(current_difficulty, correct_streak, total_answere
     elif correct_streak == 0 and total_answered > 0:
         # Decrease difficulty after wrong answer
         current_difficulty = max(current_difficulty - 1, 1)
-    
+
     # Get questions from database for current difficulty level
     db_questions = Question.get_questions_by_type('adaptive', current_difficulty)
-    
+
     if not db_questions:
         return None, current_difficulty
-    
+
     # Return a random question from the difficulty level
     question_obj = random.choice(db_questions)
     question = question_obj.to_dict()
-    
+
     return question, current_difficulty
 
 def grade_adaptive_assessment(questions_data):
@@ -415,21 +415,21 @@ def grade_adaptive_assessment(questions_data):
     max_possible = 0
     difficulty_scores = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0}
     difficulty_counts = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0}
-    
+
     for q_data in questions_data:
         difficulty = q_data['difficulty']
         is_correct = q_data['is_correct']
-        
+
         difficulty_counts[difficulty] += 1
         max_possible += difficulty
-        
+
         if is_correct:
             total_score += difficulty
             difficulty_scores[difficulty] += 1
-    
+
     # Calculate overall percentage
     percentage = (total_score / max_possible * 100) if max_possible > 0 else 0
-    
+
     # Determine skill level based on adaptive performance
     if percentage >= 80:
         skill_level = "Expert"
@@ -441,16 +441,16 @@ def grade_adaptive_assessment(questions_data):
         skill_level = "Beginner"
     else:
         skill_level = "Novice"
-    
+
     # Calculate confidence score based on consistency
     consistency_score = 0
     for diff in range(1, 6):
         if difficulty_counts[diff] > 0:
             accuracy = difficulty_scores[diff] / difficulty_counts[diff]
             consistency_score += accuracy * (diff / 5)  # Weight by difficulty
-    
+
     confidence = min(consistency_score * 100, 100)
-    
+
     return {
         'percentage': percentage,
         'skill_level': skill_level,
@@ -475,7 +475,7 @@ def get_mock_interview_questions():
 def award_badges(user, activity_type, score=None):
     """Award badges based on user activities and achievements"""
     badges_to_award = []
-    
+
     # Assessment-based badges
     if activity_type == 'aptitude' and score and score >= 80:
         badges_to_award.append('Aptitude Pro')
@@ -487,13 +487,13 @@ def award_badges(user, activity_type, score=None):
         badges_to_award.append('Adaptive Master')
     elif activity_type == 'resume':
         badges_to_award.append('Resume Ready')
-    
+
     # XP-based badges
     if user.total_xp >= 100 and user.total_xp < 200:
         badges_to_award.append('Rising Star')
     elif user.total_xp >= 500:
         badges_to_award.append('High Achiever')
-    
+
     # Award badges that user doesn't already have
     for badge_name in badges_to_award:
         badge = Badge.query.filter_by(name=badge_name).first()
@@ -502,14 +502,14 @@ def award_badges(user, activity_type, score=None):
                 user_id=user.id, 
                 badge_id=badge.id
             ).first()
-            
+
             if not existing_user_badge:
                 user_badge = UserBadge(user_id=user.id, badge_id=badge.id)
                 db.session.add(user_badge)
-                
+
                 # Award XP for earning badge
                 user.add_xp(badge.xp_reward)
-                
+
                 # Create activity
                 activity = Activity(
                     user_id=user.id,
@@ -579,11 +579,11 @@ def create_default_badges():
             'xp_reward': 75
         }
     ]
-    
+
     for badge_data in default_badges:
         badge = Badge(**badge_data)
         db.session.add(badge)
-    
+
     db.session.commit()
 
 def create_default_challenges():
@@ -622,11 +622,11 @@ def create_default_challenges():
             'points_reward': 25
         }
     ]
-    
+
     for challenge_data in default_challenges:
         challenge = Challenge(**challenge_data)
         db.session.add(challenge)
-    
+
     db.session.commit()
 
 def populate_questions_database():
@@ -634,40 +634,24 @@ def populate_questions_database():
     # Check if questions already exist
     if Question.query.first():
         return  # Questions already populated
-    
+
     # Aptitude questions
     aptitude_questions = [
         {
-            'question_text': 'If 3x + 7 = 22, what is the value of x?',
+            'question_text': 'If 5 apples cost $10, how much do 8 apples cost?',
             'assessment_type': 'aptitude',
             'difficulty_level': 1,
             'category': 'math',
-            'options': ['3', '5', '7', '9'],
-            'correct_answer': '5'
+            'options': ['$12', '$15', '$16', '$18'],
+            'correct_answer': '$16'
         },
         {
-            'question_text': 'What comes next in the sequence: 2, 6, 12, 20, 30, ?',
+            'question_text': 'What comes next in the sequence: 2, 4, 8, 16, ?',
             'assessment_type': 'aptitude',
             'difficulty_level': 1,
-            'category': 'sequence',
-            'options': ['40', '42', '44', '46'],
-            'correct_answer': '42'
-        },
-        {
-            'question_text': 'A train travels 180 km in 3 hours. What is its average speed?',
-            'assessment_type': 'aptitude',
-            'difficulty_level': 1,
-            'category': 'math',
-            'options': ['50 km/h', '60 km/h', '65 km/h', '70 km/h'],
-            'correct_answer': '60 km/h'
-        },
-        {
-            'question_text': 'Which number is the odd one out: 8, 27, 64, 125, 216?',
-            'assessment_type': 'aptitude',
-            'difficulty_level': 1,
-            'category': 'logic',
-            'options': ['8', '27', '64', '125'],
-            'correct_answer': '8'
+            'category': 'pattern',
+            'options': ['24', '32', '30', '28'],
+            'correct_answer': '32'
         },
         {
             'question_text': 'If COMPUTER is coded as RFUVQNFS, how is MONITOR coded?',
@@ -676,9 +660,105 @@ def populate_questions_database():
             'category': 'coding',
             'options': ['MNITQOP', 'NLMJUPM', 'NPOQMJI', 'NQOJUQM'],
             'correct_answer': 'NQOJUQM'
+        },
+        {
+            'question_text': 'A train leaves Station A at 9:00 AM traveling at 60 mph. Another train leaves Station B at 10:00 AM traveling at 80 mph toward Station A. If the stations are 280 miles apart, at what time will they meet?',
+            'assessment_type': 'aptitude',
+            'difficulty_level': 2,
+            'category': 'math',
+            'options': ['11:30 AM', '12:00 PM', '12:30 PM', '1:00 PM'],
+            'correct_answer': '12:00 PM'
+        },
+        {
+            'question_text': 'In a certain code, "FRIEND" is written as "GSJFOE". How is "MOTHER" written in that code?',
+            'assessment_type': 'aptitude',
+            'difficulty_level': 2,
+            'category': 'coding',
+            'options': ['NPUIFS', 'NQVJGS', 'NPUIFS', 'NQUIFS'],
+            'correct_answer': 'NPUIFS'
+        },
+        {
+            'question_text': 'What is the next number in the sequence: 3, 7, 15, 31, 63, ?',
+            'assessment_type': 'aptitude',
+            'difficulty_level': 2,
+            'category': 'pattern',
+            'options': ['95', '127', '135', '119'],
+            'correct_answer': '127'
+        },
+        {
+            'question_text': 'If the ratio of boys to girls in a class is 3:2 and there are 15 boys, how many girls are there?',
+            'assessment_type': 'aptitude',
+            'difficulty_level': 1,
+            'category': 'math',
+            'options': ['8', '9', '10', '12'],
+            'correct_answer': '10'
+        },
+        {
+            'question_text': 'Find the odd one out: Dog, Cat, Lion, Car, Tiger',
+            'assessment_type': 'aptitude',
+            'difficulty_level': 1,
+            'category': 'logical',
+            'options': ['Dog', 'Cat', 'Car', 'Tiger'],
+            'correct_answer': 'Car'
+        },
+        {
+            'question_text': 'A man is 24 years older than his son. In 2 years, his age will be twice the age of his son. What is the present age of the son?',
+            'assessment_type': 'aptitude',
+            'difficulty_level': 3,
+            'category': 'math',
+            'options': ['18', '20', '22', '24'],
+            'correct_answer': '22'
+        },
+        {
+            'question_text': 'Complete the analogy: Book : Author :: Painting : ?',
+            'assessment_type': 'aptitude',
+            'difficulty_level': 2,
+            'category': 'analogy',
+            'options': ['Canvas', 'Artist', 'Gallery', 'Frame'],
+            'correct_answer': 'Artist'
+        },
+        {
+            'question_text': 'If 40% of a number is 80, what is 60% of that number?',
+            'assessment_type': 'aptitude',
+            'difficulty_level': 2,
+            'category': 'math',
+            'options': ['100', '120', '140', '160'],
+            'correct_answer': '120'
+        },
+        {
+            'question_text': 'In a certain language, "TEACHER" is coded as "SFBDIFS". How is "STUDENT" coded?',
+            'assessment_type': 'aptitude',
+            'difficulty_level': 2,
+            'category': 'coding',
+            'options': ['RSUEFOU', 'STUFEMU', 'RSUEFMU', 'STUFELU'],
+            'correct_answer': 'RSUEFOU'
+        },
+        {
+            'question_text': 'What is the missing number in the series: 1, 4, 9, 16, 25, ?',
+            'assessment_type': 'aptitude',
+            'difficulty_level': 1,
+            'category': 'pattern',
+            'options': ['30', '32', '36', '40'],
+            'correct_answer': '36'
+        },
+        {
+            'question_text': 'If it takes 5 machines 5 minutes to make 5 widgets, how long would it take 100 machines to make 100 widgets?',
+            'assessment_type': 'aptitude',
+            'difficulty_level': 3,
+            'category': 'logical',
+            'options': ['5 minutes', '20 minutes', '100 minutes', '500 minutes'],
+            'correct_answer': '5 minutes'
+        },
+        {
+            'question_text': 'A cube has how many edges?',
+            'assessment_type': 'aptitude',
+            'difficulty_level': 1,
+            'category': 'geometry',
+            'options': ['6', '8', '12', '24'],
+            'correct_answer': '12'
         }
     ]
-    
+
     # Technical questions
     technical_questions = [
         {
@@ -722,7 +802,7 @@ def populate_questions_database():
             'correct_answer': 'PUT'
         }
     ]
-    
+
     # Soft skills questions
     soft_skills_questions = [
         {
@@ -766,7 +846,7 @@ def populate_questions_database():
             'correct_answer': 'Empowering team members'
         }
     ]
-    
+
     # Adaptive questions (key ones from each difficulty level)
     adaptive_questions = [
         # Beginner level (1)
@@ -786,39 +866,111 @@ def populate_questions_database():
             'options': ['5', '9', '3', '7'],
             'correct_answer': '9'
         },
-        # Easy level (2)
         {
-            'question_text': 'If a shirt costs $20 and is 25% off, what is the final price?',
+            'question_text': 'What does "communicate" mean?',
+            'assessment_type': 'adaptive',
+            'difficulty_level': 1,
+            'category': 'basic_skills',
+            'options': ['To hide information', 'To share information', 'To delete information', 'To lose information'],
+            'correct_answer': 'To share information'
+        },
+        {
+            'question_text': 'What is 10% of 50?',
+            'assessment_type': 'adaptive',
+            'difficulty_level': 1,
+            'category': 'basic_math',
+            'options': ['3', '5', '10', '15'],
+            'correct_answer': '5'
+        },
+        {
+            'question_text': 'Which of these is a professional greeting?',
+            'assessment_type': 'adaptive',
+            'difficulty_level': 1,
+            'category': 'basic_skills',
+            'options': ['Hey dude', 'Good morning', 'Whats up', 'Yo'],
+            'correct_answer': 'Good morning'
+        },
+        # Intermediate level (2)
+        {
+            'question_text': 'If a product costs $100 and has a 20% discount, what is the final price?',
             'assessment_type': 'adaptive',
             'difficulty_level': 2,
             'category': 'math',
-            'options': ['$15', '$16', '$17', '$18'],
-            'correct_answer': '$15'
+            'options': ['$75', '$80', '$85', '$90'],
+            'correct_answer': '$80'
         },
         {
-            'question_text': 'What is HTML?',
+            'question_text': 'What is the best way to resolve workplace conflicts?',
             'assessment_type': 'adaptive',
             'difficulty_level': 2,
-            'category': 'basic_tech',
-            'options': ['A programming language', 'A markup language', 'A database', 'An operating system'],
-            'correct_answer': 'A markup language'
+            'category': 'soft_skills',
+            'options': ['Ignore them', 'Discuss openly and find solutions', 'Blame others', 'Avoid the person'],
+            'correct_answer': 'Discuss openly and find solutions'
         },
-        # Medium level (3)
         {
-            'question_text': 'A project requires 6 people working 8 hours a day for 10 days. How many hours total?',
+            'question_text': 'What is the primary purpose of version control in software development?',
             'assessment_type': 'adaptive',
-            'difficulty_level': 3,
-            'category': 'problem_solving',
-            'options': ['480 hours', '460 hours', '500 hours', '440 hours'],
-            'correct_answer': '480 hours'
+            'difficulty_level': 2,
+            'category': 'technical',
+            'options': ['Speed up code execution', 'Track changes and collaborate', 'Reduce file size', 'Encrypt code'],
+            'correct_answer': 'Track changes and collaborate'
         },
         {
-            'question_text': 'What is the time complexity of binary search?',
+            'question_text': 'In a team project, what should you do if you disagree with a decision?',
+            'assessment_type': 'adaptive',
+            'difficulty_level': 2,
+            'category': 'teamwork',
+            'options': ['Stay silent', 'Present your concerns constructively', 'Refuse to participate', 'Complain to others'],
+            'correct_answer': 'Present your concerns constructively'
+        },
+        {
+            'question_text': 'What is 25% of 200?',
+            'assessment_type': 'adaptive',
+            'difficulty_level': 2,
+            'category': 'math',
+            'options': ['25', '50', '75', '100'],
+            'correct_answer': '50'
+        },
+        # Advanced level (3)
+        {
+            'question_text': 'What is the time complexity of a hash table lookup in the average case?',
             'assessment_type': 'adaptive',
             'difficulty_level': 3,
             'category': 'technical',
             'options': ['O(n)', 'O(log n)', 'O(n²)', 'O(1)'],
-            'correct_answer': 'O(log n)'
+            'correct_answer': 'O(1)'
+        },
+        {
+            'question_text': 'In project management, what is the critical path?',
+            'assessment_type': 'adaptive',
+            'difficulty_level': 3,
+            'category': 'management',
+            'options': ['The most expensive tasks', 'The longest sequence of dependent tasks', 'The easiest tasks', 'The most important tasks'],
+            'correct_answer': 'The longest sequence of dependent tasks'
+        },
+        {
+            'question_text': 'What is the compound interest on $1000 at 5% annual rate for 2 years?',
+            'assessment_type': 'adaptive',
+            'difficulty_level': 3,
+            'category': 'finance',
+            'options': ['$100', '$102.50', '$105', '$110'],
+            'correct_answer': '$102.50'
+        },
+        {
+            'question_text': 'Which design pattern is best for creating objects without specifying exact classes?',
+            'assessment_type': 'adaptive',
+            'difficulty_level': 3,
+            'category': 'technical',
+            'options': ['Singleton', 'Factory', 'Observer', 'Strategy'],
+            'correct_answer': 'Factory'
+        },
+        {
+            'question_text': 'What is the most effective way to handle scope creep in a project?',
+            'assessment_type': 'adaptive',
+            'difficulty_level': 3,
+            'category': 'management',
+            'options': ['Accept all changes', 'Ignore requests', 'Evaluate impact and negotiate', 'Refuse all changes'],
+            'correct_answer': 'Evaluate impact and negotiate'
         },
         # Hard level (4)
         {
@@ -837,28 +989,76 @@ def populate_questions_database():
             'options': ['Consistency, Availability, Partition tolerance', 'Concurrency, Atomicity, Persistence', 'Caching, Authentication, Performance', 'Clustering, Aggregation, Partitioning'],
             'correct_answer': 'Consistency, Availability, Partition tolerance'
         },
+        {
+            'question_text': 'What is the optimal strategy for leading a cross-functional team through organizational change?',
+            'assessment_type': 'adaptive',
+            'difficulty_level': 4,
+            'category': 'leadership',
+            'options': ['Implement changes quickly', 'Communicate vision and involve team in planning', 'Maintain status quo', 'Delegate all decisions'],
+            'correct_answer': 'Communicate vision and involve team in planning'
+        },
+        {
+            'question_text': 'In financial analysis, what does NPV measure?',
+            'assessment_type': 'adaptive',
+            'difficulty_level': 4,
+            'category': 'finance',
+            'options': ['Net Present Value of future cash flows', 'Net Profit Variation', 'New Product Value', 'Net Performance Value'],
+            'correct_answer': 'Net Present Value of future cash flows'
+        },
+        {
+            'question_text': 'What is the most effective approach to scaling a web application?',
+            'assessment_type': 'adaptive',
+            'difficulty_level': 4,
+            'category': 'system_design',
+            'options': ['Only vertical scaling', 'Only horizontal scaling', 'Combination of both based on requirements', 'Ignore scaling until problems occur'],
+            'correct_answer': 'Combination of both based on requirements'
+        },
         # Expert level (5)
         {
             'question_text': 'Given a market with elastic demand, how does a 10% price increase affect total revenue?',
             'assessment_type': 'adaptive',
             'difficulty_level': 5,
             'category': 'economics',
-            'options': ['Revenue increases', 'Revenue decreases', 'Revenue stays the same', 'Cannot determine'],
+            'options': ['Revenue increases', 'Revenue decreases', 'Revenue stays the same', 'Cannot be determined'],
             'correct_answer': 'Revenue decreases'
         },
         {
-            'question_text': 'What is the space complexity of a recursive Fibonacci solution?',
+            'question_text': 'In microservices architecture, what is the primary challenge of implementing distributed transactions?',
             'assessment_type': 'adaptive',
             'difficulty_level': 5,
-            'category': 'advanced_tech',
-            'options': ['O(1)', 'O(log n)', 'O(n)', 'O(2^n)'],
-            'correct_answer': 'O(n)'
+            'category': 'system_design',
+            'options': ['Network latency', 'Data consistency across services', 'Memory usage', 'Code complexity'],
+            'correct_answer': 'Data consistency across services'
+        },
+        {
+            'question_text': 'What is the most effective leadership style for managing a team of highly skilled professionals in a rapidly changing environment?',
+            'assessment_type': 'adaptive',
+            'difficulty_level': 5,
+            'category': 'leadership',
+            'options': ['Autocratic', 'Transformational with adaptive elements', 'Laissez-faire', 'Transactional'],
+            'correct_answer': 'Transformational with adaptive elements'
+        },
+        {
+            'question_text': 'In portfolio theory, what does the Sharpe ratio measure?',
+            'assessment_type': 'adaptive',
+            'difficulty_level': 5,
+            'category': 'finance',
+            'options': ['Risk-adjusted return', 'Total return', 'Volatility', 'Correlation'],
+            'correct_answer': 'Risk-adjusted return'
+        },
+        {
+            'question_text': 'What is the optimal approach for implementing eventual consistency in a distributed database?',
+            'assessment_type': 'adaptive',
+            'difficulty_level': 5,
+            'category': 'system_design',
+            'options': ['Immediate propagation', 'Vector clocks with conflict resolution', 'Ignore conflicts', 'Centralized coordination'],
+            'correct_answer': 'Vector clocks with conflict resolution'
         }
     ]
-    
+
     # Combine all questions
     all_questions = aptitude_questions + technical_questions + soft_skills_questions + adaptive_questions
-    
+
     # Add questions to database
     for q_data in all_questions:
         question = Question(
@@ -870,6 +1070,120 @@ def populate_questions_database():
         )
         question.set_options_list(q_data['options'])
         db.session.add(question)
-    
+
     db.session.commit()
     print(f"Added {len(all_questions)} questions to database")
+
+def create_default_challenges():
+    """Create default challenges if they don't exist"""
+    from models import Challenge
+
+    default_challenges = [
+        {
+            'title': 'Assessment Master',
+            'description': 'Complete 3 assessments this week',
+            'challenge_type': 'weekly',
+            'target_value': 3,
+            'xp_reward': 100,
+            'points_reward': 50
+        },
+        {
+            'title': 'Daily Learner',
+            'description': 'Complete 1 assessment today',
+            'challenge_type': 'daily',
+            'target_value': 1,
+            'xp_reward': 25,
+            'points_reward': 15
+        },
+        {
+            'title': 'Skill Explorer',
+            'description': 'Try all 4 assessment types',
+            'challenge_type': 'weekly',
+            'target_value': 4,
+            'xp_reward': 150,
+            'points_reward': 75
+        },
+        {
+            'title': 'High Achiever',
+            'description': 'Score above 80% in any assessment',
+            'challenge_type': 'weekly',
+            'target_value': 1,
+            'xp_reward': 200,
+            'points_reward': 100
+        },
+        {
+            'title': 'Resume Builder',
+            'description': 'Upload and analyze your resume',
+            'challenge_type': 'weekly',
+            'target_value': 1,
+            'xp_reward': 75,
+            'points_reward': 40
+        }
+    ]
+
+    for challenge_data in default_challenges:
+        existing = Challenge.query.filter_by(title=challenge_data['title']).first()
+        if not existing:
+            challenge = Challenge(**challenge_data)
+            db.session.add(challenge)
+
+    db.session.commit()
+    print("Default challenges created!")
+
+def create_default_questions():
+    """Create default questions if they don't exist"""
+    from models import Question
+
+    # Get all question sets
+    all_questions = get_default_questions()
+
+    questions_added = 0
+
+    for question_data in all_questions:
+        # Check if question already exists
+        existing = Question.query.filter_by(
+            question_text=question_data['question_text'],
+            assessment_type=question_data['assessment_type']
+        ).first()
+
+        if not existing:
+            question = Question(
+                question_text=question_data['question_text'],
+                assessment_type=question_data['assessment_type'],
+                difficulty_level=question_data['difficulty_level'],
+                category=question_data['category'],
+                correct_answer=question_data['correct_answer'],
+                explanation=question_data.get('explanation', '')
+            )
+            question.set_options_list(question_data['options'])
+            db.session.add(question)
+            questions_added += 1
+
+    db.session.commit()
+    print(f"Added {questions_added} default questions to database!")
+
+    return questions_added
+
+def get_assessment_questions(assessment_type):
+    """Get questions for a specific assessment type"""
+    from models import Question
+
+    # Try to get questions from database first
+    questions = Question.query.filter_by(
+        assessment_type=assessment_type,
+        is_active=True
+    ).all()
+
+    if questions:
+        # Convert to the format expected by the frontend
+        return [q.to_dict() for q in questions]
+
+    # Fallback to hardcoded questions if database is empty
+    if assessment_type == 'aptitude':
+        return aptitude_questions
+    elif assessment_type == 'technical':
+        return technical_questions
+    elif assessment_type == 'soft_skills':
+        return soft_skills_questions
+    else:
+        return []
