@@ -1,0 +1,135 @@
+DATABASE_URL: postgresql://neondb_owner:npg_SiHbMslc35ZL@ep-old-poetry-aefv5o6c.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require
+ * Serving Flask app 'app'
+ * Debug mode: on
+INFO:werkzeug:WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.31.128.152:5000
+INFO:werkzeug:Press CTRL+C to quit
+INFO:werkzeug: * Restarting with stat
+DATABASE_URL: postgresql://neondb_owner:npg_SiHbMslc35ZL@ep-old-poetry-aefv5o6c.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 192-001-294
+INFO:werkzeug:10.84.1.45 - - [03/Jul/2025 12:12:52] "GET / HTTP/1.1" 302 -
+INFO:werkzeug:10.84.1.45 - - [03/Jul/2025 12:12:55] "GET /dashboard HTTP/1.1" 200 -
+INFO:werkzeug:10.84.1.45 - - [03/Jul/2025 12:12:55] "GET /static/css/style.css HTTP/1.1" 304 -
+INFO:werkzeug:10.84.1.45 - - [03/Jul/2025 12:12:55] "GET /static/js/app.js HTTP/1.1" 304 -
+INFO:werkzeug:10.84.1.45 - - [03/Jul/2025 12:13:03] "GET /assessments HTTP/1.1" 200 -
+INFO:werkzeug:10.84.2.110 - - [03/Jul/2025 12:13:03] "GET /static/css/style.css HTTP/1.1" 304 -
+INFO:werkzeug:10.84.1.45 - - [03/Jul/2025 12:13:03] "GET /static/js/app.js HTTP/1.1" 304 -
+INFO:werkzeug:10.84.1.45 - - [03/Jul/2025 12:13:11] "GET /assessment/adaptive HTTP/1.1" 200 -
+INFO:werkzeug:10.84.1.45 - - [03/Jul/2025 12:13:11] "GET /static/css/style.css HTTP/1.1" 304 -
+INFO:werkzeug:10.84.1.45 - - [03/Jul/2025 12:13:11] "GET /static/js/app.js HTTP/1.1" 304 -
+INFO:werkzeug:10.84.1.45 - - [03/Jul/2025 12:13:20] "POST /submit_adaptive_answer HTTP/1.1" 200 -
+INFO:werkzeug:10.84.1.45 - - [03/Jul/2025 12:13:20] "GET /static/css/style.css HTTP/1.1" 304 -
+INFO:werkzeug:10.84.1.45 - - [03/Jul/2025 12:13:20] "GET /static/js/app.js HTTP/1.1" 304 -
+INFO:werkzeug:10.84.1.45 - - [03/Jul/2025 12:13:29] "POST /submit_adaptive_answer HTTP/1.1" 200 -
+INFO:werkzeug:10.84.1.45 - - [03/Jul/2025 12:13:29] "GET /static/css/style.css HTTP/1.1" 304 -
+INFO:werkzeug:10.84.2.110 - - [03/Jul/2025 12:13:29] "GET /static/js/app.js HTTP/1.1" 304 -
+INFO:werkzeug:10.84.1.45 - - [03/Jul/2025 12:13:35] "POST /submit_adaptive_answer HTTP/1.1" 200 -
+INFO:werkzeug:10.84.1.45 - - [03/Jul/2025 12:13:35] "GET /static/css/style.css HTTP/1.1" 304 -
+INFO:werkzeug:10.84.1.45 - - [03/Jul/2025 12:13:35] "GET /static/js/app.js HTTP/1.1" 304 -
+INFO:werkzeug:10.84.1.45 - - [03/Jul/2025 12:13:45] "POST /submit_adaptive_answer HTTP/1.1" 200 -
+INFO:werkzeug:10.84.1.45 - - [03/Jul/2025 12:13:46] "GET /static/css/style.css HTTP/1.1" 304 -
+INFO:werkzeug:10.84.1.45 - - [03/Jul/2025 12:13:46] "GET /static/js/app.js HTTP/1.1" 304 -
+INFO:werkzeug:10.84.1.45 - - [03/Jul/2025 12:13:54] "POST /submit_adaptive_answer HTTP/1.1" 200 -
+INFO:werkzeug:10.84.1.45 - - [03/Jul/2025 12:13:54] "GET /static/js/app.js HTTP/1.1" 304 -
+INFO:werkzeug:10.84.2.110 - - [03/Jul/2025 12:13:54] "GET /static/css/style.css HTTP/1.1" 304 -
+INFO:werkzeug:10.84.1.45 - - [03/Jul/2025 12:13:58] "POST /submit_adaptive_answer HTTP/1.1" 200 -
+INFO:werkzeug:10.84.1.45 - - [03/Jul/2025 12:13:59] "GET /static/js/app.js HTTP/1.1" 304 -
+INFO:werkzeug:10.84.2.110 - - [03/Jul/2025 12:13:59] "GET /static/css/style.css HTTP/1.1" 304 -
+INFO:werkzeug:10.84.1.45 - - [03/Jul/2025 12:14:03] "POST /submit_adaptive_answer HTTP/1.1" 200 -
+INFO:werkzeug:10.84.1.45 - - [03/Jul/2025 12:14:03] "GET /static/js/app.js HTTP/1.1" 304 -
+INFO:werkzeug:10.84.1.45 - - [03/Jul/2025 12:14:03] "GET /static/css/style.css HTTP/1.1" 304 -
+INFO:werkzeug:10.84.1.45 - - [03/Jul/2025 12:14:09] "POST /submit_adaptive_answer HTTP/1.1" 200 -
+INFO:werkzeug:10.84.1.45 - - [03/Jul/2025 12:14:09] "GET /static/js/app.js HTTP/1.1" 304 -
+INFO:werkzeug:10.84.2.110 - - [03/Jul/2025 12:14:09] "GET /static/css/style.css HTTP/1.1" 304 -
+INFO:werkzeug:10.84.1.45 - - [03/Jul/2025 12:14:14] "POST /submit_adaptive_answer HTTP/1.1" 200 -
+INFO:werkzeug:10.84.1.45 - - [03/Jul/2025 12:14:14] "GET /static/css/style.css HTTP/1.1" 304 -
+INFO:werkzeug:10.84.1.45 - - [03/Jul/2025 12:14:14] "GET /static/js/app.js HTTP/1.1" 304 -
+INFO:werkzeug:10.84.2.110 - - [03/Jul/2025 12:14:23] "POST /submit_adaptive_answer HTTP/1.1" 302 -
+INFO:werkzeug:10.84.2.110 - - [03/Jul/2025 12:14:26] "GET /finish_adaptive_assessment HTTP/1.1" 200 -
+INFO:werkzeug:10.84.1.45 - - [03/Jul/2025 12:14:27] "GET /static/css/style.css HTTP/1.1" 304 -
+INFO:werkzeug:10.84.2.110 - - [03/Jul/2025 12:14:27] "GET /static/js/app.js HTTP/1.1" 304 -
+INFO:werkzeug:10.84.1.45 - - [03/Jul/2025 12:14:49] "GET /assessments HTTP/1.1" 200 -
+INFO:werkzeug:10.84.1.45 - - [03/Jul/2025 12:14:52] "GET /assessments HTTP/1.1" 200 -
+INFO:werkzeug:10.84.2.110 - - [03/Jul/2025 12:14:52] "GET /assessments HTTP/1.1" 200 -
+INFO:werkzeug:10.84.1.45 - - [03/Jul/2025 12:14:54] "GET /assessments HTTP/1.1" 200 -
+INFO:werkzeug:10.84.3.44 - - [03/Jul/2025 12:14:54] "GET /static/css/style.css HTTP/1.1" 304 -
+INFO:werkzeug:10.84.3.44 - - [03/Jul/2025 12:14:54] "GET /static/js/app.js HTTP/1.1" 304 -
+INFO:werkzeug:10.84.1.45 - - [03/Jul/2025 12:15:00] "GET /assessment/aptitude HTTP/1.1" 200 -
+INFO:werkzeug:10.84.8.201 - - [03/Jul/2025 12:15:00] "GET /static/css/style.css HTTP/1.1" 304 -
+INFO:werkzeug:10.84.6.150 - - [03/Jul/2025 12:15:00] "GET /static/js/app.js HTTP/1.1" 304 -
+INFO:werkzeug:10.84.1.45 - - [03/Jul/2025 12:15:18] "POST /submit_assessment HTTP/1.1" 302 -
+INFO:werkzeug:10.84.1.45 - - [03/Jul/2025 12:15:20] "GET /assessments HTTP/1.1" 200 -
+INFO:werkzeug:10.84.6.150 - - [03/Jul/2025 12:15:20] "GET /static/css/style.css HTTP/1.1" 304 -
+INFO:werkzeug:10.84.8.201 - - [03/Jul/2025 12:15:20] "GET /static/js/app.js HTTP/1.1" 304 -
+INFO:werkzeug:10.84.8.201 - - [03/Jul/2025 12:16:22] "GET / HTTP/1.1" 302 -
+INFO:werkzeug:10.84.1.45 - - [03/Jul/2025 12:16:25] "GET /dashboard HTTP/1.1" 200 -
+INFO:werkzeug:10.84.8.201 - - [03/Jul/2025 12:16:27] "GET /dashboard HTTP/1.1" 200 -
+INFO:werkzeug:10.84.8.201 - - [03/Jul/2025 12:16:27] "GET /static/css/style.css HTTP/1.1" 304 -
+INFO:werkzeug:10.84.6.150 - - [03/Jul/2025 12:16:27] "GET /static/js/app.js HTTP/1.1" 304 -
+INFO:werkzeug:10.84.3.44 - - [03/Jul/2025 12:16:32] "GET /admin HTTP/1.1" 200 -
+INFO:werkzeug:10.84.0.41 - - [03/Jul/2025 12:16:32] "GET /static/css/style.css HTTP/1.1" 304 -
+INFO:werkzeug:10.84.3.44 - - [03/Jul/2025 12:16:32] "GET /static/js/app.js HTTP/1.1" 304 -
+INFO:werkzeug:10.84.6.150 - - [03/Jul/2025 12:16:38] "GET /admin/questions HTTP/1.1" 200 -
+INFO:werkzeug:10.84.8.201 - - [03/Jul/2025 12:16:38] "GET /static/css/style.css HTTP/1.1" 304 -
+INFO:werkzeug:10.84.6.150 - - [03/Jul/2025 12:16:38] "GET /static/js/app.js HTTP/1.1" 304 -
+INFO:werkzeug:10.84.3.44 - - [03/Jul/2025 12:17:05] "GET /admin HTTP/1.1" 200 -
+INFO:werkzeug:10.84.6.150 - - [03/Jul/2025 12:17:07] "GET /admin HTTP/1.1" 200 -
+INFO:werkzeug:10.84.8.201 - - [03/Jul/2025 12:17:09] "GET /admin HTTP/1.1" 200 -
+INFO:werkzeug:10.84.8.201 - - [03/Jul/2025 12:17:09] "GET /static/css/style.css HTTP/1.1" 304 -
+INFO:werkzeug:10.84.0.41 - - [03/Jul/2025 12:17:09] "GET /static/js/app.js HTTP/1.1" 304 -
+INFO:werkzeug:10.84.8.201 - - [03/Jul/2025 12:17:14] "GET /admin/levels HTTP/1.1" 500 -
+Traceback (most recent call last):
+  File "/home/runner/workspace/.pythonlibs/lib/python3.12/site-packages/flask/app.py", line 1536, in __call__
+    return self.wsgi_app(environ, start_response)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.12/site-packages/werkzeug/middleware/proxy_fix.py", line 183, in __call__
+    return self.app(environ, start_response)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.12/site-packages/flask/app.py", line 1514, in wsgi_app
+    response = self.handle_exception(e)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.12/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.12/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.12/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.12/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/Gamified-Employability-Quotient-Analyzer-/routes.py", line 678, in decorated_function
+    return f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/Gamified-Employability-Quotient-Analyzer-/routes.py", line 828, in admin_levels
+    return render_template('admin_levels.html', user=user, levels=levels)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.12/site-packages/flask/templating.py", line 149, in render_template
+    template = app.jinja_env.get_or_select_template(template_name_or_list)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.12/site-packages/jinja2/environment.py", line 1087, in get_or_select_template
+    return self.get_template(template_name_or_list, parent, globals)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.12/site-packages/jinja2/environment.py", line 1016, in get_template
+    return self._load_template(name, globals)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.12/site-packages/jinja2/environment.py", line 975, in _load_template
+    template = self.loader.load(self, name, self.make_globals(globals))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.12/site-packages/jinja2/loaders.py", line 126, in load
+    source, filename, uptodate = self.get_source(environment, name)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.12/site-packages/flask/templating.py", line 65, in get_source
+    return self._get_source_fast(environment, template)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.12/site-packages/flask/templating.py", line 99, in _get_source_fast
+    raise TemplateNotFound(template)
+jinja2.exceptions.TemplateNotFound: admin_levels.html
+INFO:werkzeug:172.31.128.152 - - [03/Jul/2025 12:17:14] "GET /admin/levels?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1" 200 -
+INFO:werkzeug:172.31.128.152 - - [03/Jul/2025 12:17:14] "GET /admin/levels?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1" 200 -
+^C
