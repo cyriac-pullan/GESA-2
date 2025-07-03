@@ -857,7 +857,11 @@ def admin_add_level():
 @admin_required
 def admin_edit_level(level_id):
     user = User.query.get(session['user_id'])
-    level = AssessmentLevel.query.get_or_404(level_id)
+    level = AssessmentLevel.query.get(level_id)
+    
+    if not level:
+        flash('Level not found', 'error')
+        return redirect(url_for('admin_levels'))
     
     if request.method == 'POST':
         level.assessment_type = request.form['assessment_type']
