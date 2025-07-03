@@ -1,3 +1,4 @@
+
 {% extends "base.html" %}
 
 {% block title %}Analytics - Employability Game{% endblock %}
@@ -37,18 +38,10 @@
                 <div class="card-icon" style="color: #6c5ce7;">
                     <i class="fas fa-bullseye"></i>
                 </div>
-                <div class="score-number">{{ "%.1f"|format(user.employability_score) }}</div>
+                <div class="score-number">{{ "%.1f"|format(user.employability_score) }}%</div>
                 <div class="score-label">Employability Score</div>
                 <div class="mt-2">
-                    {% if user.employability_score >= 80 %}
-                        <span class="badge bg-success">Excellent</span>
-                    {% elif user.employability_score >= 60 %}
-                        <span class="badge bg-info">Good</span>
-                    {% elif user.employability_score >= 40 %}
-                        <span class="badge bg-warning">Fair</span>
-                    {% else %}
-                        <span class="badge bg-secondary">Needs Improvement</span>
-                    {% endif %}
+                    <small class="text-muted">Overall Performance</small>
                 </div>
             </div>
         </div>
@@ -56,12 +49,11 @@
         <div class="col-lg-3 col-md-6">
             <div class="game-card text-center">
                 <div class="card-icon" style="color: #00b894;">
-                    <i class="fas fa-clipboard-check"></i>
+                    <i class="fas fa-chart-line"></i>
                 </div>
-                <div class="score-number">{{ user.assessments|length }}</div>
-                <div class="score-label">Assessments Taken</div>
-                {% if user.assessments %}
-                    {% set avg_score = (user.assessments|sum(attribute='score') / user.assessments|sum(attribute='max_score') * 100) %}
+                <div class="score-number">{{ total_assessments }}</div>
+                <div class="score-label">Total Assessments</div>
+                {% if avg_score > 0 %}
                     <div class="mt-2">
                         <small class="text-muted">Avg: {{ "%.1f"|format(avg_score) }}%</small>
                     </div>
@@ -99,159 +91,138 @@
     <div class="row">
         <div class="col-lg-8">
             <!-- Skill Breakdown Chart -->
-            <div class="chart-container mb-4">
-                <h5 class="mb-3">
-                    <i class="fas fa-chart-bar me-2"></i>Skill Breakdown
-                </h5>
-                <div style="position: relative; height: 300px;">
-                    <canvas id="skillRadarChart"></canvas>
+            <div class="game-card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-brain me-2"></i>
+                        Skill Breakdown
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if assessment_stats %}
+                        <canvas id="skillRadarChart" style="max-height: 400px;"></canvas>
+                    {% else %}
+                        <div class="empty-state">
+                            <i class="fas fa-chart-bar fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No Assessment Data</h5>
+                            <p class="text-muted">Take some assessments to see your skill breakdown!</p>
+                            <a href="{{ url_for('assessments') }}" class="btn btn-game">
+                                <i class="fas fa-play me-2"></i>Start Assessment
+                            </a>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
             
             <!-- Progress Over Time -->
-            <div class="chart-container mb-4">
-                <h5 class="mb-3">
-                    <i class="fas fa-chart-line me-2"></i>Progress Over Time
-                </h5>
-                <div style="position: relative; height: 300px;">
-                    <canvas id="progressChart"></canvas>
+            <div class="game-card mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-line me-2"></i>
+                        Progress Over Time
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if assessment_stats %}
+                        <canvas id="progressChart" style="max-height: 300px;"></canvas>
+                    {% else %}
+                        <div class="empty-state">
+                            <i class="fas fa-chart-line fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No Progress Data</h5>
+                            <p class="text-muted">Take multiple assessments to track your progress!</p>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
         
         <div class="col-lg-4">
-            <!-- XP Distribution -->
-            <div class="chart-container mb-4">
-                <h5 class="mb-3">
-                    <i class="fas fa-chart-pie me-2"></i>XP Sources
-                </h5>
-                <div style="position: relative; height: 250px;">
-                    <canvas id="xpChart"></canvas>
-                </div>
-            </div>
-            
-            <!-- Recommendations -->
-            <div class="game-card mb-4">
-                <h5 class="mb-3">
-                    <i class="fas fa-lightbulb me-2"></i>Recommendations
-                </h5>
-                
-                {% set recommendations = [] %}
-                {% if user.employability_score < 60 %}
-                    {% set _ = recommendations.append("Focus on improving assessment scores") %}
-                {% endif %}
-                {% if user.assessments|length < 3 %}
-                    {% set _ = recommendations.append("Take more skill assessments") %}
-                {% endif %}
-                {% if not user.resumes %}
-                    {% set _ = recommendations.append("Upload and optimize your resume") %}
-                {% endif %}
-                {% if user.badges|length < 3 %}
-                    {% set _ = recommendations.append("Earn more badges by completing challenges") %}
-                {% endif %}
-                {% if user.mock_interviews|length == 0 %}
-                    {% set _ = recommendations.append("Practice with mock interviews") %}
-                {% endif %}
-                
-                {% if recommendations %}
-                    <div class="list-group list-group-flush">
-                        {% for recommendation in recommendations[:4] %}
-                            <div class="list-group-item border-0 px-0">
-                                <i class="fas fa-arrow-right text-primary me-2"></i>
-                                {{ recommendation }}
-                            </div>
-                        {% endfor %}
-                    </div>
-                {% else %}
-                    <div class="text-center">
-                        <i class="fas fa-star text-warning" style="font-size: 2rem;"></i>
-                        <p class="mt-2 mb-0">Great job! You're on track!</p>
-                        <small class="text-muted">Keep completing assessments to maintain your momentum</small>
-                    </div>
-                {% endif %}
-            </div>
-            
-            <!-- Level Progress -->
+            <!-- Assessment Statistics -->
             <div class="game-card">
-                <h5 class="mb-3">
-                    <i class="fas fa-trophy me-2"></i>Level Progress
-                </h5>
-                
-                <div class="text-center mb-3">
-                    <div class="level-badge mb-2">{{ user.level }}</div>
-                    <div class="progress" style="height: 20px;">
-                        <div class="progress-bar" style="width: {{ user.get_level_progress() }}%"></div>
-                    </div>
-                    <small class="text-muted mt-1 d-block">{{ user.get_level_progress() }}% Complete</small>
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-trophy me-2"></i>
+                        Assessment Statistics
+                    </h5>
                 </div>
-                
-                <div class="row text-center">
-                    <div class="col-6">
-                        <div class="border-end">
-                            <div class="fw-bold">{{ user.total_xp }}</div>
-                            <small class="text-muted">Current XP</small>
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="fw-bold">
-                            {% if user.level == 'Beginner' %}
-                                {{ 100 - user.total_xp }}
-                            {% elif user.level == 'Learning' %}
-                                {{ 500 - user.total_xp }}
-                            {% elif user.level == 'Almost Ready' %}
-                                {{ 1000 - user.total_xp }}
-                            {% else %}
-                                Max Level!
-                            {% endif %}
-                        </div>
-                        <small class="text-muted">XP to Next</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Recent Activity Timeline -->
-    <div class="row mt-4">
-        <div class="col-12">
-            <div class="game-card">
-                <h4 class="mb-3">
-                    <i class="fas fa-history me-2"></i>Recent Activity
-                </h4>
-                
-                {% if activities %}
-                    <div class="activity-timeline">
-                        {% for activity in activities %}
-                            <div class="timeline-item">
-                                <div class="d-flex justify-content-between align-items-start">
+                <div class="card-body">
+                    {% if assessment_stats %}
+                        {% for assessment_type, stats in assessment_stats.items() %}
+                            <div class="assessment-stat-item mb-3">
+                                <div class="d-flex justify-content-between align-items-center">
                                     <div>
-                                        <strong>{{ activity.description }}</strong>
-                                        <div class="text-muted small">
-                                            {{ activity.created_at.strftime('%B %d, %Y at %I:%M %p') }}
-                                        </div>
+                                        <h6 class="mb-1">{{ assessment_type.replace('_', ' ').title() }}</h6>
+                                        <small class="text-muted">{{ stats.total_taken }} attempts</small>
                                     </div>
                                     <div class="text-end">
-                                        {% if activity.points_earned > 0 %}
-                                            <span class="badge bg-success">+{{ activity.points_earned }} pts</span>
-                                        {% endif %}
+                                        <div class="fw-bold">{{ "%.1f"|format(stats.best_score) }}%</div>
+                                        <small class="text-muted">Best Score</small>
+                                    </div>
+                                </div>
+                                <div class="progress mt-2" style="height: 8px;">
+                                    <div class="progress-bar" role="progressbar" 
+                                         style="width: {{ stats.latest_score }}%;"
+                                         aria-valuenow="{{ stats.latest_score }}" 
+                                         aria-valuemin="0" 
+                                         aria-valuemax="100">
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-between mt-1">
+                                    <small class="text-muted">Latest: {{ "%.1f"|format(stats.latest_score) }}%</small>
+                                    {% if stats.improvement > 0 %}
+                                        <small class="text-success">+{{ "%.1f"|format(stats.improvement) }}%</small>
+                                    {% elif stats.improvement < 0 %}
+                                        <small class="text-danger">{{ "%.1f"|format(stats.improvement) }}%</small>
+                                    {% else %}
+                                        <small class="text-muted">No change</small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="empty-state">
+                            <i class="fas fa-chart-bar fa-2x text-muted mb-2"></i>
+                            <p class="text-muted mb-0">No assessment data available</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Recent Activities -->
+            <div class="game-card mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-history me-2"></i>
+                        Recent Activities
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if activities %}
+                        {% for activity in activities %}
+                            <div class="activity-item mb-3">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <div class="activity-description">{{ activity.description }}</div>
+                                        <small class="text-muted">{{ activity.created_at.strftime('%b %d, %Y at %I:%M %p') }}</small>
+                                    </div>
+                                    <div class="text-end">
                                         {% if activity.xp_earned > 0 %}
                                             <span class="badge bg-primary">+{{ activity.xp_earned }} XP</span>
+                                        {% endif %}
+                                        {% if activity.points_earned > 0 %}
+                                            <span class="badge bg-success">+{{ activity.points_earned }} pts</span>
                                         {% endif %}
                                     </div>
                                 </div>
                             </div>
                         {% endfor %}
-                    </div>
-                {% else %}
-                    <div class="empty-state">
-                        <i class="fas fa-clock"></i>
-                        <h5>No activities yet</h5>
-                        <p>Start taking assessments to see your progress here!</p>
-                        <a href="{{ url_for('assessments') }}" class="btn btn-game">
-                            <i class="fas fa-play me-2"></i>Start Now
-                        </a>
-                    </div>
-                {% endif %}
+                    {% else %}
+                        <div class="empty-state">
+                            <i class="fas fa-clock fa-2x text-muted mb-2"></i>
+                            <p class="text-muted mb-0">No recent activities</p>
+                        </div>
+                    {% endif %}
+                </div>
             </div>
         </div>
     </div>
@@ -267,9 +238,9 @@ function initializeCharts() {
     // Parse skill data from server
     const skillData = {{ skill_data|safe }};
     
-    // Skill Breakdown Chart (Bar Chart instead of Radar for better visibility)
+    // Skill Breakdown Chart (Bar Chart for better visibility)
     const radarCtx = document.getElementById('skillRadarChart');
-    if (radarCtx) {
+    if (radarCtx && Object.keys(skillData).length > 0) {
         const labels = Object.keys(skillData);
         const scores = labels.map(label => {
             const assessments = skillData[label];
@@ -335,7 +306,7 @@ function initializeCharts() {
     
     // Progress Chart
     const progressCtx = document.getElementById('progressChart');
-    if (progressCtx) {
+    if (progressCtx && Object.keys(skillData).length > 0) {
         const datasets = [];
         const colors = [
             'rgba(108, 92, 231, 1)',
@@ -351,7 +322,7 @@ function initializeCharts() {
             if (assessments.length > 0) {
                 datasets.push({
                     label: skill.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()),
-                    data: assessments.map(a => ({ x: a.date, y: a.score })),
+                    data: assessments.map(a => ({ x: a.assessment_number, y: a.score })),
                     borderColor: colors[colorIndex % colors.length],
                     backgroundColor: colors[colorIndex % colors.length] + '20',
                     tension: 0.4,
@@ -384,6 +355,11 @@ function initializeCharts() {
                         title: {
                             display: true,
                             text: 'Score (%)'
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                return value + '%';
+                            }
                         }
                     }
                 },
@@ -402,55 +378,55 @@ function initializeCharts() {
             }
         });
     }
-    
-    // XP Distribution Chart
-    const xpCtx = document.getElementById('xpChart');
-    if (xpCtx) {
-        // Calculate actual XP distribution from user activities
-        const xpData = calculateXPDistribution();
-        
-        new Chart(xpCtx, {
-            type: 'doughnut',
-            data: {
-                labels: ['Assessments', 'Resume', 'Activities', 'Badges', 'Other'],
-                datasets: [{
-                    data: xpData,
-                    backgroundColor: [
-                        'rgba(108, 92, 231, 0.8)',
-                        'rgba(0, 184, 148, 0.8)',
-                        'rgba(253, 121, 168, 0.8)',
-                        'rgba(253, 203, 110, 0.8)',
-                        'rgba(232, 67, 147, 0.8)'
-                    ],
-                    borderWidth: 2,
-                    borderColor: '#fff'
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'bottom'
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                const percentage = ((context.parsed / total) * 100).toFixed(1);
-                                return context.label + ': ' + context.parsed + ' XP (' + percentage + '%)';
-                            }
-                        }
-                    }
-                }
-            }
-        });
-    }
-}
-
-function calculateXPDistribution() {
-    // Default distribution if no specific data available
-    return [45, 20, 15, 15, 5];
 }
 </script>
+
+<style>
+.assessment-stat-item {
+    border-bottom: 1px solid #eee;
+    padding-bottom: 15px;
+}
+
+.assessment-stat-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.activity-item {
+    border-bottom: 1px solid #f8f9fa;
+    padding-bottom: 10px;
+}
+
+.activity-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.activity-description {
+    font-size: 0.9rem;
+    color: #333;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.score-number {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #333;
+}
+
+.score-label {
+    font-size: 0.9rem;
+    color: #666;
+    margin-top: 5px;
+}
+
+.card-icon {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+}
+</style>
 {% endblock %}

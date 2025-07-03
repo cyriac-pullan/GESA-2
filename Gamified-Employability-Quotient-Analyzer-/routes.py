@@ -586,6 +586,8 @@ def analytics():
     
     # Prepare data for charts
     skill_data = {}
+    latest_scores = {}
+    assessment_stats = {}
     
     assessment_counter = {}
     for assessment in assessments:
@@ -605,13 +607,36 @@ def analytics():
             'score': percentage,
             'assessment_number': assessment_counter[assessment_type]
         })
+        
+        # Track latest score for each assessment type
+        latest_scores[assessment_type] = percentage
+    
+    # Calculate assessment statistics
+    for assessment_type, scores in skill_data.items():
+        if scores:
+            score_values = [s['score'] for s in scores]
+            assessment_stats[assessment_type] = {
+                'total_taken': len(scores),
+                'best_score': max(score_values),
+                'latest_score': score_values[-1],
+                'avg_score': sum(score_values) / len(score_values),
+                'improvement': score_values[-1] - score_values[0] if len(score_values) > 1 else 0
+            }
     
     # Get recent activities for timeline
     activities = Activity.query.filter_by(user_id=user.id).order_by(Activity.created_at.desc()).limit(10).all()
     
+    # Calculate overall stats
+    total_assessments = len(assessments)
+    avg_score = sum(a.get_percentage() for a in assessments) / total_assessments if total_assessments > 0 else 0
+    
     return render_template('analytics.html', 
                          user=user,
                          skill_data=json.dumps(skill_data),
+                         latest_scores=latest_scores,
+                         assessment_stats=assessment_stats,
+                         total_assessments=total_assessments,
+                         avg_score=avg_score,
                          activities=activities)
 
 @app.route('/leaderboard')
