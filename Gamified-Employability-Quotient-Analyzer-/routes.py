@@ -582,21 +582,28 @@ def analytics():
     user = User.query.get(session['user_id'])
     
     # Get assessment data for charts
-    assessments = Assessment.query.filter_by(user_id=user.id).all()
+    assessments = Assessment.query.filter_by(user_id=user.id).order_by(Assessment.completed_at.asc()).all()
     
     # Prepare data for charts
     skill_data = {}
-    progress_data = []
     
+    assessment_counter = {}
     for assessment in assessments:
-        assessment_type = assessment.assessment_type.replace('_', ' ').title()
+        assessment_type = assessment.assessment_type
         percentage = assessment.get_percentage()
+        
+        # Initialize counter for this assessment type
+        if assessment_type not in assessment_counter:
+            assessment_counter[assessment_type] = 0
+        assessment_counter[assessment_type] += 1
         
         if assessment_type not in skill_data:
             skill_data[assessment_type] = []
+        
         skill_data[assessment_type].append({
             'date': assessment.completed_at.strftime('%Y-%m-%d'),
-            'score': percentage
+            'score': percentage,
+            'assessment_number': assessment_counter[assessment_type]
         })
     
     # Get recent activities for timeline

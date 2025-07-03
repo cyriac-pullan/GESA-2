@@ -410,22 +410,32 @@ def get_next_adaptive_question(current_difficulty, correct_streak, total_answere
     return question, current_difficulty
 
 def grade_adaptive_assessment(questions_data):
-    """Grade adaptive assessment and calculate skill level"""
+    """Grade adaptive assessment and calculate skill level with detailed analysis"""
     total_score = 0
     max_possible = 0
     difficulty_scores = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0}
     difficulty_counts = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0}
+    category_performance = {}
+    weak_areas = []
+    strong_areas = []
 
     for q_data in questions_data:
         difficulty = q_data['difficulty']
         is_correct = q_data['is_correct']
+        category = q_data.get('category', 'general')
 
         difficulty_counts[difficulty] += 1
         max_possible += difficulty
 
+        # Track category performance
+        if category not in category_performance:
+            category_performance[category] = {'correct': 0, 'total': 0}
+        category_performance[category]['total'] += 1
+
         if is_correct:
             total_score += difficulty
             difficulty_scores[difficulty] += 1
+            category_performance[category]['correct'] += 1
 
     # Calculate overall percentage
     percentage = (total_score / max_possible * 100) if max_possible > 0 else 0
@@ -451,13 +461,52 @@ def grade_adaptive_assessment(questions_data):
 
     confidence = min(consistency_score * 100, 100)
 
+    # Analyze category performance for weak/strong areas
+    for category, performance in category_performance.items():
+        accuracy = (performance['correct'] / performance['total']) * 100
+        category_name = category.replace('_', ' ').title()
+        
+        if accuracy < 50:
+            weak_areas.append({
+                'category': category_name,
+                'accuracy': accuracy,
+                'questions_attempted': performance['total']
+            })
+        elif accuracy >= 80:
+            strong_areas.append({
+                'category': category_name,
+                'accuracy': accuracy,
+                'questions_attempted': performance['total']
+            })
+
+    # Generate improvement suggestions
+    improvement_suggestions = []
+    
+    # Difficulty-based suggestions
+    for diff in range(1, 6):
+        if difficulty_counts[diff] > 0:
+            accuracy = (difficulty_scores[diff] / difficulty_counts[diff]) * 100
+            if accuracy < 60:
+                difficulty_names = {1: 'basic', 2: 'intermediate', 3: 'advanced', 4: 'expert', 5: 'master'}
+                improvement_suggestions.append(f"Focus on {difficulty_names[diff]} level concepts")
+
+    # Category-based suggestions
+    if weak_areas:
+        for area in weak_areas[:3]:  # Top 3 weak areas
+            improvement_suggestions.append(f"Improve {area['category'].lower()} skills")
+
     return {
         'percentage': percentage,
         'skill_level': skill_level,
         'confidence': confidence,
         'total_score': total_score,
         'max_possible': max_possible,
-        'difficulty_breakdown': difficulty_scores
+        'difficulty_breakdown': difficulty_scores,
+        'difficulty_counts': difficulty_counts,
+        'category_performance': category_performance,
+        'weak_areas': weak_areas,
+        'strong_areas': strong_areas,
+        'improvement_suggestions': improvement_suggestions[:5]  # Top 5 suggestions
     }
 
 def get_mock_interview_questions():

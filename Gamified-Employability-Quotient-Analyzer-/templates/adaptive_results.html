@@ -118,13 +118,90 @@
                 </div>
             </div>
             
-            <!-- Recommendations -->
+            <!-- Detailed Analysis -->
+            <div class="row g-4 mb-4">
+                <!-- Weak Areas -->
+                <div class="col-md-6">
+                    <div class="game-card">
+                        <h5 class="mb-3">
+                            <i class="fas fa-exclamation-triangle text-warning me-2"></i>Areas for Improvement
+                        </h5>
+                        
+                        {% if results.weak_areas %}
+                            <div class="weak-areas">
+                                {% for area in results.weak_areas %}
+                                    <div class="performance-item">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="fw-bold">{{ area.category }}</span>
+                                            <span class="badge bg-warning">{{ "%.0f"|format(area.accuracy) }}%</span>
+                                        </div>
+                                        <div class="progress mt-2" style="height: 8px;">
+                                            <div class="progress-bar bg-warning" style="width: {{ area.accuracy }}%"></div>
+                                        </div>
+                                        <small class="text-muted">{{ area.questions_attempted }} questions attempted</small>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="text-center">
+                                <i class="fas fa-check-circle text-success" style="font-size: 2rem;"></i>
+                                <p class="mt-2 mb-0">No significant weak areas identified!</p>
+                                <small class="text-muted">Great job maintaining consistency across all topics</small>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Strong Areas -->
+                <div class="col-md-6">
+                    <div class="game-card">
+                        <h5 class="mb-3">
+                            <i class="fas fa-star text-success me-2"></i>Strengths
+                        </h5>
+                        
+                        {% if results.strong_areas %}
+                            <div class="strong-areas">
+                                {% for area in results.strong_areas %}
+                                    <div class="performance-item">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="fw-bold">{{ area.category }}</span>
+                                            <span class="badge bg-success">{{ "%.0f"|format(area.accuracy) }}%</span>
+                                        </div>
+                                        <div class="progress mt-2" style="height: 8px;">
+                                            <div class="progress-bar bg-success" style="width: {{ area.accuracy }}%"></div>
+                                        </div>
+                                        <small class="text-muted">{{ area.questions_attempted }} questions attempted</small>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="text-center">
+                                <i class="fas fa-seedling text-info" style="font-size: 2rem;"></i>
+                                <p class="mt-2 mb-0">Keep practicing to identify your strengths!</p>
+                                <small class="text-muted">Complete more assessments to see patterns</small>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Improvement Suggestions -->
             <div class="game-card mb-4">
                 <h5 class="mb-3">
-                    <i class="fas fa-lightbulb me-2"></i>Recommendations
+                    <i class="fas fa-lightbulb me-2"></i>Personalized Recommendations
                 </h5>
                 
                 <div class="recommendations">
+                    {% if results.improvement_suggestions %}
+                        {% for suggestion in results.improvement_suggestions %}
+                            <div class="recommendation-item">
+                                <i class="fas fa-arrow-right text-primary"></i>
+                                <strong>{{ suggestion }}</strong>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    
+                    <!-- Skill level based recommendations -->
                     {% if results.skill_level == 'Expert' %}
                         <div class="recommendation-item">
                             <i class="fas fa-star text-warning"></i>
@@ -169,6 +246,9 @@
             <div class="text-center mb-4">
                 <a href="{{ url_for('dashboard') }}" class="btn btn-game me-3">
                     <i class="fas fa-home me-2"></i>Back to Dashboard
+                </a>
+                <a href="{{ url_for('analytics') }}" class="btn btn-game me-3">
+                    <i class="fas fa-chart-line me-2"></i>View Analytics
                 </a>
                 <a href="{{ url_for('take_assessment', assessment_type='adaptive') }}" class="btn btn-game-secondary">
                     <i class="fas fa-redo me-2"></i>Take Again
@@ -238,6 +318,21 @@
     background: #f8f9fa;
     border-radius: 10px;
     border-left: 4px solid #6c5ce7;
+}
+
+.performance-item {
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+.weak-areas .performance-item {
+    border-left: 4px solid #ffc107;
+}
+
+.strong-areas .performance-item {
+    border-left: 4px solid #198754;
 }
 </style>
 {% endblock %}
