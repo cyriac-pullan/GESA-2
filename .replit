@@ -2,6 +2,7 @@ modules = ["web", "python-3.12", "nodejs-20"]
 
 [nix]
 channel = "stable-24_05"
+packages = ["glibcLocales"]
 
 [workflows]
 runButton = "Run Flask App"
@@ -13,4 +14,4 @@ mode = "sequential"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "python main.py"
+args = "cd Gamified-Employability-Quotient-Analyzer- && python main.py"
