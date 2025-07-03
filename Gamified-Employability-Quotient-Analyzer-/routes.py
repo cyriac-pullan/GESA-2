@@ -852,6 +852,52 @@ def admin_add_level():
     
     return render_template('admin_add_level.html', user=user)
 
+# Edit Level
+@app.route('/admin/levels/edit/<int:level_id>', methods=['GET', 'POST'])
+@admin_required
+def admin_edit_level(level_id):
+    user = User.query.get(session['user_id'])
+    level = AssessmentLevel.query.get_or_404(level_id)
+    
+    if request.method == 'POST':
+        level.assessment_type = request.form['assessment_type']
+        level.level_number = int(request.form['level_number'])
+        level.level_name = request.form['level_name']
+        level.description = request.form['description']
+        level.pass_percentage = float(request.form['pass_percentage'])
+        level.xp_reward = int(request.form['xp_reward'])
+        level.points_reward = int(request.form['points_reward'])
+        
+        db.session.commit()
+        
+        flash('Level updated successfully!', 'success')
+        return redirect(url_for('admin_levels'))
+    
+    return render_template('admin_edit_level.html', user=user, level=level)
+
+# Delete Level
+@app.route('/admin/levels/delete/<int:level_id>', methods=['POST'])
+@admin_required
+def admin_delete_level(level_id):
+    level = AssessmentLevel.query.get_or_404(level_id)
+    db.session.delete(level)
+    db.session.commit()
+    
+    flash('Level deleted successfully!', 'success')
+    return redirect(url_for('admin_levels'))
+
+# Toggle Level Active Status
+@app.route('/admin/levels/toggle/<int:level_id>', methods=['POST'])
+@admin_required
+def admin_toggle_level(level_id):
+    level = AssessmentLevel.query.get_or_404(level_id)
+    level.is_active = not level.is_active
+    db.session.commit()
+    
+    status = 'activated' if level.is_active else 'deactivated'
+    flash(f'Level {status} successfully!', 'success')
+    return redirect(url_for('admin_levels'))
+
 # Create default admin user
 @app.route('/admin/create_admin', methods=['GET', 'POST'])
 def create_admin():

@@ -1,0 +1,127 @@
+
+{% extends "base.html" %}
+
+{% block title %}Admin - Add Level - Employability Game{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="game-card">
+                <h2 class="mb-2">
+                    <i class="fas fa-plus me-2"></i>
+                    Add New Assessment Level
+                </h2>
+                <p class="text-muted mb-0">Create a new assessment level with custom settings</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Back Button -->
+    <div class="row mb-3">
+        <div class="col-12">
+            <a href="{{ url_for('admin_levels') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Back to Levels
+            </a>
+        </div>
+    </div>
+
+    <!-- Add Level Form -->
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-layer-group me-2"></i>Level Information
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="assessment_type" class="form-label">Assessment Type</label>
+                                <select class="form-select" id="assessment_type" name="assessment_type" required>
+                                    <option value="">Select Type</option>
+                                    <option value="aptitude">Aptitude</option>
+                                    <option value="technical">Technical</option>
+                                    <option value="soft_skills">Soft Skills</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="level_number" class="form-label">Level Number</label>
+                                <input type="number" class="form-control" id="level_number" name="level_number" min="1" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="level_name" class="form-label">Level Name</label>
+                            <input type="text" class="form-control" id="level_name" name="level_name" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="pass_percentage" class="form-label">Pass Percentage</label>
+                                <input type="number" class="form-control" id="pass_percentage" name="pass_percentage" 
+                                       min="0" max="100" step="0.1" value="70.0" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="xp_reward" class="form-label">XP Reward</label>
+                                <input type="number" class="form-control" id="xp_reward" name="xp_reward" 
+                                       min="0" value="100" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="points_reward" class="form-label">Points Reward</label>
+                                <input type="number" class="form-control" id="points_reward" name="points_reward" 
+                                       min="0" value="50" required>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{{ url_for('admin_levels') }}" class="btn btn-secondary me-md-2">Cancel</a>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save me-2"></i>Add Level
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-info-circle me-2"></i>Guidelines
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Level numbers should be sequential
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Pass percentage determines advancement
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Higher levels should have greater rewards
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Descriptions help users understand goals
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
