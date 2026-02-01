@@ -105,14 +105,6 @@ GESA-2/
 
 ---
 
-## 📅 Future Roadmap
-
-*   [ ] integration with LMS (Learning Management Systems).
-*   [ ] Advanced AI generation for questions.
-*   [ ] PDF certification generation upon reaching "Job-Ready" status.
-
----
-
 ## 🤝 Contributing
 
 Contributions are welcome! Please fork the repo and submit a Pull Request.
